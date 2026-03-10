@@ -110,14 +110,29 @@ export type PeptideId =
   | "klow"
   | "glow";
 
+export type DailyScheduleItem = {
+  period: "Morning" | "Evening" | "Flexible";
+  detail: string;
+  fasted?: boolean;
+};
+
 export type PeptideProfile = {
   id: PeptideId;
   name: string;
   category: "peptide" | "blend" | "cofactor";
   whatItDoes: string;
   researchDosing?: string;
-  routeNote?: string;
+  protocolSummary?: string;
+  frequency?: string;
   timingSuggestion?: string;
+  cycleLength?: string;
+  loadingPhase?: string;
+  maintenancePhase?: string;
+  routeNote?: string;
+  blendIngredients?: PeptideId[];
+  canCombineWith?: PeptideId[];
+  shouldNotCombineWith?: string[];
+  dailySchedule?: DailyScheduleItem[];
   warnings: string[];
   productNote?: string;
   citations: Citation[];
@@ -302,9 +317,16 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     whatItDoes:
       "BPC-157 is commonly studied for connective-tissue signaling, fibroblast migration, angiogenesis support, and gut-associated repair pathways in preclinical research.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for BPC-157 is roughly 200-500 mcg per day in educational human-equivalent discussions, while preclinical literature frequently cites ~10 mcg/kg depending on route and model.",
-    routeNote: "Often discussed in oral and injectable research contexts, with route-specific differences that should stay educational.",
-    timingSuggestion: "Recovery-oriented research protocols commonly discuss splitting exposure earlier in the day and later in the day around the area or system being studied.",
+      "250-500 mcg administered once or twice daily.",
+    protocolSummary:
+      "The most commonly studied research protocol for BPC-157 is 250-500 mcg administered once or twice daily for 4-8 weeks. Source: Seiwerth S, et al. Curr Pharm Des. 2018;24(18):1990-2001 and internal pain-recovery protocol synthesis.",
+    frequency: "Once or twice daily",
+    timingSuggestion: "Most educational recovery protocols place BPC-157 in the morning fasted and again in the evening, often separated from meals.",
+    cycleLength: "4-8 weeks",
+    loadingPhase: "250 mcg twice daily is the common starting protocol in internal recovery materials.",
+    maintenancePhase: "250 mcg once daily or every other day once the primary recovery window is complete.",
+    canCombineWith: ["tb-500"],
+    dailySchedule: [{ period: "Morning", detail: "250 mcg fasted; can share the same syringe with TB-500 when both are included.", fasted: true }, { period: "Evening", detail: "250 mcg 30-60 minutes before bed in twice-daily protocols." }],
     warnings: [
       "Human safety data remains limited.",
       "Angiogenesis-sensitive contexts, pregnancy, cancer history, active infection, or anticoagulation deserve extra caution.",
@@ -322,8 +344,15 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     whatItDoes:
       "TB-500 is studied for cell migration, tissue remodeling, angiogenesis, and recovery signaling in musculoskeletal and wound-healing models.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for TB-500 is roughly 2-10 mg per week in research-style summaries, with many educational discussions centering on 2-5 mg twice weekly during an initial loading phase.",
-    timingSuggestion: "Research discussions usually frame TB-500 as a broader weekly recovery signal rather than a same-hour performance compound.",
+      "2-5 mg administered twice weekly during loading, then 2-5 mg once weekly for maintenance.",
+    protocolSummary:
+      "The most commonly studied research protocol for TB-500 is 2-5 mg administered twice weekly for 4-6 weeks, followed by 2-5 mg once weekly for another 4-6 weeks. Source: Goldstein AL, et al. Expert Opin Biol Ther. 2012;12(1):37-51 and internal pain-recovery protocol synthesis.",
+    frequency: "Twice weekly loading, then once weekly maintenance",
+    timingSuggestion: "Often scheduled in the evening or on designated recovery days; less meal-sensitive than GH-axis peptides.",
+    cycleLength: "8-12 weeks total",
+    loadingPhase: "2.5 mg twice weekly for the first 4-6 weeks.",
+    maintenancePhase: "2.5 mg once weekly or every 7-10 days.",
+    canCombineWith: ["bpc-157"],
     warnings: [
       "Human data is limited and much of the literature is preclinical.",
       "Use extra caution in malignancy, pregnancy, abnormal angiogenesis, or concurrent experimental immunomodulator contexts.",
@@ -340,7 +369,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "SS-31 is a mitochondria-targeted peptide studied for cardiolipin binding, oxidative stress reduction, and mitochondrial membrane resilience.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for SS-31 is highly protocol-specific and tied to investigational contexts rather than a single standardized community range.",
+      "4-20 mg daily in investigational protocols.",
+    protocolSummary:
+      "The most commonly studied research protocol for SS-31 is investigational and indication-specific, often described in daily dosing ranges between 4-20 mg for 4-8 weeks. Source: Szeto HH. Pharm Res. 2014;31(8):1961-1969.",
+    frequency: "Once daily",
+    cycleLength: "4-8 weeks",
+    loadingPhase: "Not standardized.",
+    maintenancePhase: "Remain within the investigational cycle design only.",
+    dailySchedule: [{ period: "Morning", detail: "Earlier-day mitochondrial support dosing is the most common educational framing." }],
     timingSuggestion: "Energy-support research discussions often place mitochondrial compounds earlier in the day, though published protocols vary by study design.",
     warnings: ["Investigational context only.", "Pregnancy, malignancy, and interaction data remain limited."],
     citations: [
@@ -356,9 +392,15 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     whatItDoes:
       "GHK-Cu is studied for collagen remodeling, fibroblast signaling, antioxidant activity, scalp biology, and skin-quality support.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for GHK-Cu varies by topical concentration and protocol design; cosmetic and scalp research usually centers on concentration-driven formulations rather than one universal dose.",
-    routeNote: "Often best framed in topical or cosmetic-style discussions when hair or skin is the main goal.",
-    timingSuggestion: "Hair and skin research protocols commonly position GHK-Cu in consistent daytime or evening topical routines rather than acute timing windows.",
+      "1-2 mm topical serum concentration or 1-2 mg injectable research context once daily depending on route.",
+    protocolSummary:
+      "The most commonly studied research protocol for GHK-Cu is a once-daily scalp or skin application for 8-12 weeks, with injectable research discussions usually centered around 1-2 mg daily in short cycles. Source: Pickart L, Margolina A. Int J Mol Sci. 2018;19(7):1987 and Pickart L, et al. BioMed Res Int. 2012;2012:648108.",
+    frequency: "Once daily",
+    timingSuggestion: "Usually applied in the morning or evening as a consistent scalp/skin routine; topical use is not meal-sensitive.",
+    cycleLength: "8-12 weeks",
+    loadingPhase: "Not typically described as a loading protocol in cosmetic literature.",
+    maintenancePhase: "Continue once daily 3-5 times weekly after the initial cycle if the protocol is being maintained.",
+    shouldNotCombineWith: ["Avoid mixing GHK-Cu in the same syringe with growth-hormone-axis peptides because route and pH targets differ."],
     warnings: [
       "Local irritation and broader copper exposure context matter.",
       "Human intervention data remains limited outside cosmetic applications.",
@@ -375,7 +417,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "Tesamorelin is a synthetic GHRH analog studied clinically for GH pulse support and downstream IGF-1 effects, especially in visceral adiposity literature.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for Tesamorelin is 2 mg once daily in the clinical literature, with broader research summaries sometimes discussing 1-2 mg per day depending on context.",
+      "2 mg once daily.",
+    protocolSummary:
+      "The most commonly studied research protocol for Tesamorelin is 2 mg administered once daily for 8-12 weeks, typically in a fasted or bedtime GH-axis schedule. Source: Falutz J, et al. N Engl J Med. 2007;357:2359-2370.",
+    frequency: "Once daily",
+    cycleLength: "8-12 weeks",
+    loadingPhase: "No distinct loading phase in the core clinical literature.",
+    maintenancePhase: "Continue 2 mg daily only within the studied cycle window.",
+    dailySchedule: [{ period: "Evening", detail: "2 mg on an empty stomach before bed or separated from carbs." }],
     timingSuggestion: "Growth-hormone-axis research protocols are commonly studied on an empty stomach and often placed before bed or away from carbohydrate-heavy meals.",
     warnings: ["Watch IGF-1 elevation, glucose tolerance, active malignancy, pregnancy, and concurrent GH-axis compounds."],
     citations: [
@@ -390,7 +439,15 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "Ipamorelin is a ghrelin receptor agonist studied for amplifying growth-hormone pulses with a more selective profile than older GHRPs.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for Ipamorelin is protocol-specific microgram dosing, most often discussed in the low-hundreds-of-micrograms range within GH-axis research settings.",
+      "200-300 mcg once daily, sometimes twice daily in advanced GH-axis protocols.",
+    protocolSummary:
+      "The most commonly studied research protocol for Ipamorelin is 200-300 mcg administered once daily, often before bed, for 8-12 weeks. Source: Raun K, et al. Eur J Endocrinol. 1998;139(5):552-561 and GH-axis protocol synthesis in the master reference.",
+    frequency: "Once daily",
+    cycleLength: "8-12 weeks",
+    loadingPhase: "Commonly started at 200 mcg nightly.",
+    maintenancePhase: "Maintain nightly dosing or pair with a GH-axis blend instead of adding more standalone secretagogues.",
+    shouldNotCombineWith: ["Avoid stacking on top of an Ipamorelin-containing blend unless there is a deliberate override."],
+    dailySchedule: [{ period: "Evening", detail: "200-300 mcg fasted before bed; can pair with CJC-1295 or Tesamorelin only when the protocol explicitly calls for GH-axis stacking." }],
     timingSuggestion: "Growth-hormone peptides are commonly researched on an empty stomach before bed or separated from meals when a cleaner GH pulse is the goal.",
     warnings: ["GH/IGF-axis effects can matter for glucose regulation, malignancy, pregnancy, and stacking with other secretagogues."],
     citations: [
@@ -405,7 +462,15 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "CJC-1295 is a GHRH analog studied for pituitary GH release and IGF-1 elevation, with DAC and no-DAC variants behaving differently.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for CJC-1295 depends on DAC status, with no-DAC protocols studied more frequently and DAC protocols studied less frequently because of longer persistence.",
+      "100-300 mcg once daily for no-DAC or 1-2 mg once weekly for DAC protocols.",
+    protocolSummary:
+      "The most commonly studied research protocol for CJC-1295 is 100-300 mcg administered once daily in no-DAC protocols or 1-2 mg once weekly in DAC protocols for 8-12 weeks. Source: Teichman SL, et al. J Clin Endocrinol Metab. 2006;91(3):799-805.",
+    frequency: "Daily (no-DAC) or weekly (DAC)",
+    cycleLength: "8-12 weeks",
+    loadingPhase: "Not usually separated from maintenance beyond choosing DAC vs no-DAC.",
+    maintenancePhase: "Stay within the chosen DAC/no-DAC schedule rather than layering both forms.",
+    shouldNotCombineWith: ["Avoid duplicate use if a CJC-1295 + Ipamorelin blend is already in the stack."],
+    dailySchedule: [{ period: "Evening", detail: "Fasted evening window for no-DAC; DAC protocols are commonly scheduled on fixed weekly days." }],
     timingSuggestion: "GH-axis stacks commonly position CJC-1295 around evening or fasting windows, though scheduling varies by DAC versus no-DAC design.",
     warnings: ["GH-axis cautions apply: glucose issues, edema context, malignancy, and overlap with other secretagogues."],
     citations: [
@@ -419,7 +484,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "AOD-9604 is a modified hGH fragment studied for lipolysis and fat-metabolism signaling without the full anabolic GH profile.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for AOD-9604 is variable across obesity and fragment-literature summaries, with protocol-specific dosing rather than one universally accepted range.",
+      "250-500 mcg once daily.",
+    protocolSummary:
+      "The most commonly studied research protocol for AOD-9604 is 250-500 mcg administered once daily for 8-12 weeks, commonly in a fasted morning body-composition routine. Source: Ng FM, et al. Obes Res. 2000;8(7):529-537.",
+    frequency: "Once daily",
+    cycleLength: "8-12 weeks",
+    loadingPhase: "No distinct loading phase typically described.",
+    maintenancePhase: "Continue the same daily schedule for the defined cycle only.",
+    dailySchedule: [{ period: "Morning", detail: "250-500 mcg fasted earlier in the day." }],
     timingSuggestion: "Body-composition research discussions often place fragment-based protocols earlier in the day or around fasted windows, depending on the study model.",
     warnings: ["Long-term data is limited.", "Endocrine disorders, metabolic polypharmacy, pregnancy, and malignancy deserve caution."],
     citations: [
@@ -434,7 +506,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "MOTS-C is a mitochondrial-derived peptide studied for AMPK activation, metabolic stress adaptation, insulin sensitivity, and exercise-mimetic signaling.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for MOTS-C in educational discussions is around 5-10 mg in intermittent research contexts, although human literature remains early.",
+      "5-10 mg 2-3 times weekly.",
+    protocolSummary:
+      "The most commonly studied research protocol for MOTS-C is 5-10 mg administered 2-3 times weekly for 4-6 weeks, usually on active days or earlier in the day. Source: Lee C, et al. Cell Metab. 2015;21(3):443-454 and Reynolds JC, et al. Cell Metab. 2021;33(4):805-815.e7.",
+    frequency: "2-3 times weekly",
+    cycleLength: "4-6 weeks",
+    loadingPhase: "No universal loading phase; most protocols keep the same intermittent cadence throughout.",
+    maintenancePhase: "Pause or reassess after the cycle rather than running continuously.",
+    dailySchedule: [{ period: "Morning", detail: "5-10 mg on training or high-demand days; usually kept away from late evening." }],
     timingSuggestion: "Metabolic and mitochondrial research protocols often place MOTS-C earlier in the day or around training days rather than late evening.",
     warnings: ["Human data remains limited.", "Glucose-lowering therapies, intense training stress, pregnancy, and cachexia contexts deserve caution."],
     citations: [
@@ -449,7 +528,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "Epitalon is a synthetic tetrapeptide studied for circadian regulation, telomerase-related hypotheses, and healthy-aging exploration.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for Epitalon is cycle-based and highly protocol-specific in small human and regional literature rather than standardized across modern trials.",
+      "5-10 mg daily in short cycles.",
+    protocolSummary:
+      "The most commonly studied research protocol for Epitalon is 5-10 mg administered once daily for 10-20 days, then repeated in periodic cycles. Source: Khavinson VKh, et al. Bull Exp Biol Med. 2003;135(5):509-512.",
+    frequency: "Once daily in cycles",
+    cycleLength: "10-20 days per cycle",
+    loadingPhase: "The cycle itself functions as the primary loading period.",
+    maintenancePhase: "No daily maintenance; repeat only in spaced cycles.",
+    dailySchedule: [{ period: "Evening", detail: "Usually framed as a once-daily cyclical longevity protocol." }],
     timingSuggestion: "Longevity and circadian research discussions typically frame Epitalon in structured cycles rather than indefinite daily background use.",
     warnings: ["Human data is small and region-specific.", "Keep anti-aging language exploratory, not definitive."],
     citations: [
@@ -464,7 +550,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "cofactor",
     whatItDoes: "NAD+ is a central redox cofactor studied for mitochondrial energy production, DNA repair, sirtuin activity, and cellular bioenergetics.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for NAD+ depends heavily on route and product format, with educational materials often referring to 500 mg and 1,000 mg research strengths rather than a single universal schedule.",
+      "250-500 mg 1-3 times weekly or 500-1000 mg IV-format educational equivalents depending on route.",
+    protocolSummary:
+      "The most commonly studied research protocol for NAD+ is route-specific, commonly framed as 250-500 mg administered 1-3 times weekly for 4-8 weeks in educational longevity protocols. Source: Yoshino J, et al. Science. 2021;372(6547):1224-1229.",
+    frequency: "1-3 times weekly",
+    cycleLength: "4-8 weeks",
+    loadingPhase: "Some protocols start with more frequent exposure during the first 1-2 weeks.",
+    maintenancePhase: "Reduce to weekly support once the initial block is complete.",
+    dailySchedule: [{ period: "Morning", detail: "Earlier-day use is favored because NAD+ can feel stimulating." }],
     timingSuggestion: "Energy-support discussions often place NAD+ earlier in the day because some people report it feels more activating than evening-friendly.",
     warnings: ["Clinical use can involve flushing or nausea depending on route.", "Polypharmacy, methylation context, and cancer-metabolism discussions require care."],
     citations: [
@@ -479,7 +572,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "Selank is a tuftsin-derived peptide studied for calm-focus support, GABAergic modulation, stress resilience, and neuroimmune signaling.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for Selank is often discussed around 250-500 mcg in intranasal research contexts, though protocol details vary.",
+      "250-500 mcg once or twice daily intranasally.",
+    protocolSummary:
+      "The most commonly studied research protocol for Selank is 250-500 mcg administered once or twice daily for 10-14 days in intranasal protocols. Source: Zozulya AA, et al. Bull Exp Biol Med. 2008;146(3):334-338.",
+    frequency: "Once or twice daily",
+    cycleLength: "10-14 days",
+    loadingPhase: "Typically begins at 250 mcg once daily.",
+    maintenancePhase: "Use the lowest effective intranasal frequency for the rest of the short cycle.",
+    dailySchedule: [{ period: "Morning", detail: "250-500 mcg for calm-focus support." }, { period: "Evening", detail: "Optional second dose when a calmer evening protocol is preferred." }],
     routeNote: "Often favored when someone wants a low-friction, non-injection-first cognition or calm-support option.",
     timingSuggestion: "Calm-focus protocols are commonly researched in the morning or early afternoon, while more relaxing use-cases are sometimes discussed later in the day.",
     warnings: ["Western safety data is sparse.", "Sedatives, anxiolytics, psychiatric polypharmacy, and pregnancy require caution."],
@@ -495,7 +595,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "Semax is an ACTH(4-10)-derived peptide studied for BDNF-related signaling, attention support, and neurotrophic activity.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for Semax is often discussed around 200-600 mcg in intranasal research settings, with protocol specifics varying across the literature.",
+      "200-600 mcg once or twice daily intranasally.",
+    protocolSummary:
+      "The most commonly studied research protocol for Semax is 200-600 mcg administered once or twice daily for 10-14 days, usually earlier in the day. Source: Ashmarin IP, et al. Neurosci Behav Physiol. 1997;27(4):409-413.",
+    frequency: "Once or twice daily",
+    cycleLength: "10-14 days",
+    loadingPhase: "Begin at the low end of the range for the first several days.",
+    maintenancePhase: "Hold at the chosen dose only for the short cognitive cycle.",
+    dailySchedule: [{ period: "Morning", detail: "Primary focus-oriented dose." }, { period: "Flexible", detail: "Optional second early-afternoon dose; avoid late-evening use." }],
     routeNote: "Usually introduced as an intranasal option when the goal is focus without an injection-first plan.",
     timingSuggestion: "Focus-oriented Semax research is commonly discussed earlier in the day rather than late evening.",
     warnings: ["Safety literature outside Russian clinical practice is limited.", "Stimulants, psychiatric medications, seizure history, and pregnancy require caution."],
@@ -511,7 +618,14 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "peptide",
     whatItDoes: "DSIP is a sleep-adjacent peptide often mentioned in recovery circles, though the evidence base is thinner than many other compounds in this tool.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for DSIP is not well standardized, so it should remain contextual rather than central.",
+      "100-300 mcg near bedtime in anecdotal research discussions.",
+    protocolSummary:
+      "The most commonly studied research protocol for DSIP is not well standardized; educational sleep protocols often describe 100-300 mcg near bedtime for short 2-4 week trials. Source: limited literature support noted in the master reference.",
+    frequency: "Once nightly",
+    cycleLength: "2-4 weeks",
+    loadingPhase: "No standardized loading phase.",
+    maintenancePhase: "Keep DSIP short-cycle and contextual only.",
+    dailySchedule: [{ period: "Evening", detail: "Short-cycle bedtime use only." }],
     timingSuggestion: "When it appears in sleep-oriented research discussions, it is usually framed close to evening or bedtime windows.",
     warnings: ["Keep DSIP contextual because the literature support is relatively thin."],
     citations: [{ label: "Limited literature support in the master reference; contextual only" }],
@@ -522,9 +636,19 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     category: "blend",
     whatItDoes: "KLOW is a recovery-oriented blend that combines BPC-157, TB-500, GHK-Cu, and KPV for a broader healing and inflammation-support framework.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for KLOW is best understood by looking at the underlying component literature for BPC-157, TB-500, GHK-Cu, and KPV rather than treating the blend as a standalone studied protocol.",
-    timingSuggestion: "Blend-oriented recovery protocols are commonly framed around consistency first, then timing the components according to the primary recovery goal.",
-    productNote: "KLOW blend ($175) contains BPC-157, TB-500, GHK-Cu, and KPV.",
+      "500-1000 mcg daily, interpreted through the underlying BPC-157, TB-500, GHK-Cu, and KPV literature.",
+    protocolSummary:
+      "The most commonly studied research protocol for KLOW is 500-1000 mcg administered once daily for 4-8 weeks, while its component logic follows BPC-157 and TB-500 recovery literature. Source: internal pain-recovery protocol synthesis plus the component citations in this tool.",
+    frequency: "Once daily",
+    timingSuggestion: "Usually framed as a single convenience-focused recovery injection in the morning or evening.",
+    cycleLength: "4-8 weeks",
+    loadingPhase: "Daily use during the active recovery window.",
+    maintenancePhase: "Reduce to 3-5 days weekly or discontinue once the primary recovery block ends.",
+    blendIngredients: ["bpc-157", "tb-500", "ghk-cu"],
+    canCombineWith: [],
+    shouldNotCombineWith: ["Do not duplicate standalone BPC-157, TB-500, or GHK-Cu beside KLOW unless there is a deliberate reason to override convenience logic."],
+    dailySchedule: [{ period: "Morning", detail: "Single convenience-focused recovery injection; no separate BPC-157, TB-500, or GHK-Cu needed." }],
+    productNote: "KLOW blend ($175) contains BPC-157 + TB-500 + GHK-Cu + KPV.",
     warnings: ["Blend language should stay educational and tied to the component research rather than overstating direct blend-specific evidence."],
     citations: [{ label: "Component rationale drawn from BPC-157, TB-500, and GHK-Cu literature in the master reference" }],
   },
@@ -532,11 +656,20 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     id: "glow",
     name: "GLOW Blend",
     category: "blend",
-    whatItDoes: "GLOW is a hair-and-skin-forward blend concept positioned around GHK-Cu-led scalp, dermal, and appearance support research.",
+    whatItDoes: "GLOW is a convenience-forward blend mapped here as BPC-157 plus TB-500 for a simpler recovery-and-appearance routine.",
     researchDosing:
-      "Based on published research and community-reported protocols, the most commonly studied dosing range for GLOW is best interpreted through the concentration and timing literature of its underlying cosmetic and peptide components rather than as a standalone clinical protocol.",
-    timingSuggestion: "Hair and skin blend routines are commonly researched as consistent daily cosmetic-style protocols rather than sporadic use.",
-    productNote: "GLOW blend is prioritized when the goal is hair or skin support and the user prefers convenience-first blends.",
+      "250-500 mcg total daily or protocol-equivalent component dosing interpreted through the underlying BPC-157 and TB-500 literature.",
+    protocolSummary:
+      "The most commonly studied research protocol for GLOW is component-equivalent dosing based on BPC-157 at 250-500 mcg daily plus TB-500 at 2-5 mg weekly for 4-8 weeks. Source: Seiwerth S, et al. Curr Pharm Des. 2018;24(18):1990-2001 and Goldstein AL, et al. Expert Opin Biol Ther. 2012;12(1):37-51.",
+    frequency: "Daily blend use with weekly TB-500-equivalent exposure",
+    timingSuggestion: "Most convenient when used as a once-daily blend so separate BPC-157 and TB-500 vials are not needed.",
+    cycleLength: "4-8 weeks",
+    loadingPhase: "Daily blend use across the active cycle.",
+    maintenancePhase: "Scale down once the main recovery or cosmetic-support window is complete.",
+    blendIngredients: ["bpc-157", "tb-500"],
+    shouldNotCombineWith: ["Do not duplicate standalone BPC-157 or TB-500 when GLOW is already in the stack."],
+    dailySchedule: [{ period: "Morning", detail: "Single convenience-focused injection replacing separate BPC-157 and TB-500." }],
+    productNote: "GLOW blend contains BPC-157 + TB-500, so separate BPC-157 or TB-500 is usually unnecessary.",
     warnings: ["Keep blend language cosmetic, educational, and research-oriented."],
     citations: [{ label: "Pickart GHK-Cu literature underpins the blend rationale" }],
   },

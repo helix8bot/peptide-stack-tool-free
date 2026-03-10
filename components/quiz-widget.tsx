@@ -453,8 +453,13 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
                           <h4 className="text-lg font-semibold text-[#1B2A4A]">{profile.name}</h4>
                           <p className="mt-2 text-sm leading-6 text-slate-700">{profile.whatItDoes}</p>
                           <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Why it made your stack:</span> {item.whyChosen}</p>
-                          {type === "full" && item.dosingRange ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Commonly studied dosing language:</span> {item.dosingRange}</p> : null}
-                          {type === "full" && item.timingSuggestion ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Timing suggestion:</span> {item.timingSuggestion}</p> : null}
+                          {type === "full" && item.dosingRange ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Dosing range:</span> {item.dosingRange}</p> : null}
+                          {type === "full" && item.protocolSummary ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Most commonly studied research protocol:</span> {item.protocolSummary}</p> : null}
+                          {type === "full" && item.frequency ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Frequency:</span> {item.frequency}</p> : null}
+                          {type === "full" && item.timingSuggestion ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Timing:</span> {item.timingSuggestion}</p> : null}
+                          {type === "full" && item.cycleLength ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Cycle length:</span> {item.cycleLength}</p> : null}
+                          {type === "full" && item.loadingPhase ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Loading phase:</span> {item.loadingPhase}</p> : null}
+                          {type === "full" && item.maintenancePhase ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Maintenance phase:</span> {item.maintenancePhase}</p> : null}
                           {item.routeAdjustment ? <p className="mt-2 text-sm leading-6 text-teal-800">{item.routeAdjustment}</p> : null}
                           {profile.productNote ? <p className="mt-2 text-sm leading-6 text-slate-600">{profile.productNote}</p> : null}
                         </div>
@@ -499,6 +504,18 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
                     {result.protocolCalendar.map((item) => (
                       <div key={item.phase} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700">
                         <p className="font-semibold text-[#1B2A4A]">{item.phase}</p>
+                        <p className="mt-2">{item.detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
+                  <h3 className="text-xl font-semibold text-[#1B2A4A]">Your daily protocol schedule</h3>
+                  <div className="mt-5 grid gap-3">
+                    {result.dailyProtocolSchedule.map((item) => (
+                      <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700">
+                        <p className="font-semibold text-[#1B2A4A]">{item.label}</p>
                         <p className="mt-2">{item.detail}</p>
                       </div>
                     ))}
