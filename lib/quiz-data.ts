@@ -1,55 +1,53 @@
 export type GoalOption =
-  | "Pain Recovery"
-  | "Hair Restoration"
-  | "Body Composition"
-  | "Longevity"
-  | "Cognitive Performance"
+  | "Pain & Injury Recovery"
+  | "Hair Restoration & Skin Health"
+  | "Body Composition & Fat Loss"
+  | "Longevity & Anti-Aging"
+  | "Cognitive Performance & Focus"
   | "Sleep & Recovery";
 
 export type ExperienceOption =
-  | "Complete beginner"
-  | "Some research"
-  | "Currently using peptides";
+  | "Complete beginner (never used)"
+  | "Done some research (haven't started)"
+  | "Currently using 1-2 peptides"
+  | "Experienced (used multiple protocols)";
 
 export type PriorityOption =
-  | "Fastest results"
-  | "Lowest cost"
-  | "Most research backing"
-  | "Fewest side effects";
+  | "Strongest research backing"
+  | "Fastest results timeline"
+  | "Simplest protocol (fewest injections)"
+  | "Best value for budget";
 
 export type HealthCondition =
-  | "Joint pain"
-  | "Hair thinning"
-  | "Low energy"
-  | "Poor sleep"
-  | "Slow recovery"
-  | "Gut issues"
-  | "Brain fog"
-  | "None";
+  | "Chronic joint/tendon pain"
+  | "Hair thinning or loss"
+  | "Low energy/fatigue"
+  | "Poor sleep quality"
+  | "Slow workout recovery"
+  | "Gut/digestive issues"
+  | "Brain fog/poor focus"
+  | "Signs of aging (skin/wrinkles)"
+  | "Weight management struggles"
+  | "None of these";
 
-export type AgeRangeOption =
-  | "18-30"
-  | "31-40"
-  | "41-50"
-  | "51-60"
-  | "60+";
+export type AgeRangeOption = "18-30" | "31-40" | "41-50" | "51-60" | "60+";
 
 export type BudgetOption =
   | "Under $100"
-  | "$100-250"
-  | "$250-500"
+  | "$100-200"
+  | "$200-350"
+  | "$350-500"
   | "$500+";
 
 export type DeliveryPreference =
-  | "Prefer oral"
-  | "Fine with injections"
-  | "No preference";
+  | "Comfortable with injections"
+  | "Prefer oral/topical only"
+  | "Open to either";
 
 export type TimelineExpectation =
-  | "30 days"
-  | "60 days"
-  | "90 days"
-  | "6+ months";
+  | "Quick wins (30 days)"
+  | "Moderate (60-90 days)"
+  | "Long-term optimization (6+ months)";
 
 export type QuizAnswers = {
   goal: GoalOption | "";
@@ -57,12 +55,10 @@ export type QuizAnswers = {
   priority: PriorityOption | "";
   email: string;
   conditions: HealthCondition[];
-  supplements: string;
   ageRange: AgeRangeOption | "";
   budget: BudgetOption | "";
   deliveryPreference: DeliveryPreference | "";
   timeline: TimelineExpectation | "";
-  notes: string;
 };
 
 export type Citation = {
@@ -75,7 +71,6 @@ export type PeptideId =
   | "tb-500"
   | "ss-31"
   | "ghk-cu"
-  | "glow-blend"
   | "tesamorelin"
   | "ipamorelin"
   | "cjc-1295"
@@ -85,53 +80,53 @@ export type PeptideId =
   | "nad-plus"
   | "selank"
   | "semax"
-  | "dsip";
+  | "dsip"
+  | "klow"
+  | "glow";
 
 export type PeptideProfile = {
   id: PeptideId;
   name: string;
-  slug: string;
   category: "peptide" | "blend" | "cofactor";
-  supportLevel: "stronger" | "moderate" | "limited";
-  overview: string;
-  beginnerAngle: string;
-  advancedAngle: string;
-  oralBiasNote?: string;
+  whatItDoes: string;
+  researchDosing?: string;
+  routeNote?: string;
+  warnings: string[];
+  productNote?: string;
   citations: Citation[];
-  educationUrl: string;
-  blendDisclosure?: string;
 };
 
 export const freeQuestions = [
   {
     id: "goal",
-    title: "What is the primary health goal for this research review?",
+    title: "What's your primary health goal?",
     options: [
-      "Pain Recovery",
-      "Hair Restoration",
-      "Body Composition",
-      "Longevity",
-      "Cognitive Performance",
+      "Pain & Injury Recovery",
+      "Hair Restoration & Skin Health",
+      "Body Composition & Fat Loss",
+      "Longevity & Anti-Aging",
+      "Cognitive Performance & Focus",
       "Sleep & Recovery",
     ] satisfies GoalOption[],
   },
   {
     id: "experience",
-    title: "How experienced are you with peptide research topics?",
+    title: "What's your experience with peptides?",
     options: [
-      "Complete beginner",
-      "Some research",
-      "Currently using peptides",
+      "Complete beginner (never used)",
+      "Done some research (haven't started)",
+      "Currently using 1-2 peptides",
+      "Experienced (used multiple protocols)",
     ] satisfies ExperienceOption[],
   },
   {
     id: "priority",
-    title: "Which decision filter matters most right now?",
+    title: "What matters most to you?",
     options: [
-      "Fastest results",
-      "Lowest cost",
-      "Most research backing",
-      "Fewest side effects",
+      "Strongest research backing",
+      "Fastest results timeline",
+      "Simplest protocol (fewest injections)",
+      "Best value for budget",
     ] satisfies PriorityOption[],
   },
 ] as const;
@@ -139,64 +134,54 @@ export const freeQuestions = [
 export const fullQuestions = [
   {
     id: "conditions",
-    title: "Current health conditions",
-    description: "Choose all that match the current research context.",
+    title: "Select all that apply to you:",
+    description: "Multi-select. This helps tailor the research stack and what gets prioritized first.",
     options: [
-      "Joint pain",
-      "Hair thinning",
-      "Low energy",
-      "Poor sleep",
-      "Slow recovery",
-      "Gut issues",
-      "Brain fog",
-      "None",
+      "Chronic joint/tendon pain",
+      "Hair thinning or loss",
+      "Low energy/fatigue",
+      "Poor sleep quality",
+      "Slow workout recovery",
+      "Gut/digestive issues",
+      "Brain fog/poor focus",
+      "Signs of aging (skin/wrinkles)",
+      "Weight management struggles",
+      "None of these",
     ] satisfies HealthCondition[],
   },
   {
-    id: "supplements",
-    title: "Current supplements or protocols",
-    description: "Optional context to avoid redundant stack ideas.",
-    type: "textarea",
-  },
-  {
     id: "ageRange",
-    title: "Age range",
+    title: "Age range?",
     options: ["18-30", "31-40", "41-50", "51-60", "60+"] satisfies AgeRangeOption[],
   },
   {
     id: "budget",
-    title: "Monthly budget",
+    title: "Monthly budget for your protocol?",
     options: [
       "Under $100",
-      "$100-250",
-      "$250-500",
+      "$100-200",
+      "$200-350",
+      "$350-500",
       "$500+",
     ] satisfies BudgetOption[],
   },
   {
     id: "deliveryPreference",
-    title: "Delivery preference",
+    title: "How do you feel about subcutaneous injections?",
     options: [
-      "Prefer oral",
-      "Fine with injections",
-      "No preference",
+      "Comfortable with injections",
+      "Prefer oral/topical only",
+      "Open to either",
     ] satisfies DeliveryPreference[],
   },
   {
     id: "timeline",
-    title: "Timeline expectation",
+    title: "What's your target timeline?",
     options: [
-      "30 days",
-      "60 days",
-      "90 days",
-      "6+ months",
+      "Quick wins (30 days)",
+      "Moderate (60-90 days)",
+      "Long-term optimization (6+ months)",
     ] satisfies TimelineExpectation[],
-  },
-  {
-    id: "notes",
-    title: "Anything else we should know?",
-    description: "Optional notes for nuance in the full analysis.",
-    type: "textarea",
   },
 ] as const;
 
@@ -204,406 +189,256 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
   "bpc-157": {
     id: "bpc-157",
     name: "BPC-157",
-    slug: "bpc-157",
     category: "peptide",
-    supportLevel: "stronger",
-    overview:
-      "Research interest often centers on connective tissue signaling, recovery models, and gastrointestinal support pathways in preclinical settings.",
-    beginnerAngle:
-      "Studies frequently make BPC-157 the simplest entry point when the research goal is recovery-focused rather than highly layered.",
-    advancedAngle:
-      "In broader recovery stacks, researchers often pair BPC-157 with tissue-repair and mitochondrial-support contexts for more nuance.",
-    oralBiasNote:
-      "For participants leaning away from injections, educational materials often focus on route-of-administration tradeoffs rather than a single format claim.",
-    citations: [
-      {
-        label: "Seiwerth 2018, Current Pharmaceutical Design",
-        doi: "10.2174/1381612824666180412144511",
-      },
-      {
-        label: "Sikiric 2020, Current Pharmaceutical Design",
-        doi: "10.2174/1381612826666200219161658",
-      },
-      {
-        label: "Chang 2011, Journal of Applied Physiology",
-        doi: "10.1152/japplphysiol.00945.2010",
-      },
+    whatItDoes:
+      "BPC-157 is a stable gastric pentadecapeptide studied for angiogenesis signaling, fibroblast migration, tendon and ligament healing, and gut-support pathways in preclinical models.",
+    researchDosing:
+      "Published and internal research summaries commonly reference preclinical dosing around 10 mcg/kg, with educational human-equivalent ranges often discussed around 200-500 mcg/day depending on route and context.",
+    routeNote:
+      "Injection-averse users often ask about oral BPC-157, but route comparisons should stay framed as research-context only.",
+    warnings: [
+      "Human safety data is limited.",
+      "Use caution in angiogenesis-sensitive settings, pregnancy, cancer history, anticoagulation, or active infection contexts.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/bpc-157",
+    citations: [
+      { label: "Seiwerth S, et al. Curr Pharm Des. 2018;24(18):1990-2001", doi: "10.2174/1381612824666180412144511" },
+      { label: "Sikiric P, et al. Curr Pharm Des. 2020;26(25):2979-3007", doi: "10.2174/1381612826666200219161658" },
+      { label: "Chang CH, et al. J Appl Physiol. 2011;110(3):774-780", doi: "10.1152/japplphysiol.00945.2010" },
+    ],
   },
   "tb-500": {
     id: "tb-500",
     name: "TB-500",
-    slug: "tb-500",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "TB-500 is typically discussed in research settings around cell migration, repair signaling, and recovery-oriented tissue models.",
-    beginnerAngle:
-      "It is usually added after a core recovery peptide when the research goal expands beyond a single tissue-support angle.",
-    advancedAngle:
-      "In more advanced stacks, TB-500 is often used to widen the recovery discussion from localized support toward broader system recovery context.",
-    citations: [
-      {
-        label: "Goldstein 2012, Expert Opinion on Biological Therapy",
-        doi: "10.1517/14712598.2012.634793",
-      },
-      {
-        label: "Philp 2007, Journal of Cellular Physiology",
-        doi: "10.1002/jcp.20687",
-      },
-      {
-        label: "Bock-Marquette 2004, Nature",
-        doi: "10.1038/nature03000",
-      },
+    whatItDoes:
+      "TB-500 is a thymosin beta-4 fragment studied for actin binding, cell migration, angiogenesis, matrix remodeling, and wound-healing support in preclinical models.",
+    researchDosing:
+      "Research-oriented summaries often discuss 2-10 mg/week experimental contexts, with common educational references around 2-5 mg twice weekly during early loading periods.",
+    warnings: [
+      "Limited human data.",
+      "Use caution around malignancy, pregnancy, abnormal angiogenesis, or concurrent experimental immunomodulators.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/tb-500",
+    citations: [
+      { label: "Goldstein AL, et al. Expert Opin Biol Ther. 2012;12(1):37-51", doi: "10.1517/14712598.2012.634793" },
+      { label: "Philp D, et al. J Cell Physiol. 2007;208(1):195-200", doi: "10.1002/jcp.20687" },
+      { label: "Bock-Marquette I, et al. Nature. 2004;432(7016):466-472", doi: "10.1038/nature03000" },
+    ],
   },
   "ss-31": {
     id: "ss-31",
-    name: "SS-31",
-    slug: "ss-31",
+    name: "SS-31 (Elamipretide)",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "SS-31 is commonly framed around mitochondrial function and cellular-energy resilience in research literature.",
-    beginnerAngle:
-      "Beginners usually see SS-31 as a secondary support layer rather than the first compound explored.",
-    advancedAngle:
-      "Higher-context protocols often add SS-31 when the research goal includes recovery plus cellular-energy support.",
-    citations: [
-      {
-        label: "Szeto 2014, Pharmaceutical Research",
-        doi: "10.1007/s11095-013-1226-7",
-      },
-      {
-        label: "Daubert 2017, Circulation: Heart Failure",
-        doi: "10.1161/CIRCHEARTFAILURE.117.004389",
-      },
-      {
-        label: "Karaa 2018, Genetics in Medicine",
-        doi: "10.1038/gim.2018.35",
-      },
+    whatItDoes:
+      "SS-31 is a mitochondria-targeted tetrapeptide studied for cardiolipin binding, electron transport efficiency, ROS reduction, and mitochondrial membrane stabilization.",
+    warnings: [
+      "Investigational context only.",
+      "Pregnancy, cancer, and interaction data remain limited.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/ss-31",
+    citations: [
+      { label: "Szeto HH. Pharm Res. 2014;31(8):1961-1969", doi: "10.1007/s11095-013-1226-7" },
+      { label: "Daubert MA, et al. Circ Heart Fail. 2017;10(12):e004389", doi: "10.1161/CIRCHEARTFAILURE.117.004389" },
+      { label: "Karaa A, et al. Genet Med. 2018;20(12):1594-1602", doi: "10.1038/gim.2018.35" },
+    ],
   },
   "ghk-cu": {
     id: "ghk-cu",
     name: "GHK-Cu",
-    slug: "ghk-cu",
     category: "peptide",
-    supportLevel: "stronger",
-    overview:
-      "GHK-Cu appears often in educational reviews covering skin, follicle, and regenerative signaling in laboratory literature.",
-    beginnerAngle:
-      "It is a common anchor for straightforward hair-focused research stacks because the literature map is relatively easy to explain.",
-    advancedAngle:
-      "Advanced reviews often position GHK-Cu as the core around which broader appearance and scalp-support contexts are layered.",
-    oralBiasNote:
-      "For users avoiding injections, GHK-Cu is typically discussed with topical and cosmetic-context educational notes.",
-    citations: [
-      {
-        label: "Pickart & Margolina 2018, International Journal of Molecular Sciences",
-        doi: "10.3390/ijms19071987",
-      },
-      {
-        label: "Pickart 2012, BioMed Research International",
-        doi: "10.1155/2012/648108",
-      },
-      {
-        label: "Pickart 2014, BioMed Research International",
-        doi: "10.1155/2014/151479",
-      },
+    whatItDoes:
+      "GHK-Cu is an endogenous copper-binding tripeptide studied for collagen and elastin remodeling, fibroblast signaling, antioxidant effects, and hair and skin biology.",
+    routeNote:
+      "For injection-averse users, topical/cosmetic-context education is usually the first discussion point.",
+    warnings: [
+      "Topical irritation and copper exposure context should be considered.",
+      "Human intervention data is limited outside cosmetic applications.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/ghk-cu",
-  },
-  "glow-blend": {
-    id: "glow-blend",
-    name: "GLOW Blend",
-    slug: "glow-blend",
-    category: "blend",
-    supportLevel: "limited",
-    overview:
-      "This blend is presented as internal educational positioning built around GHK-Cu-centered appearance-support themes rather than standalone published literature.",
-    beginnerAngle:
-      "For simpler reviews, GLOW Blend usually stays secondary to GHK-Cu so the rationale remains grounded in the better-known citation set.",
-    advancedAngle:
-      "In advanced cosmetic-context stacks, GLOW Blend is used to describe how a multi-input protocol might be organized in educational materials.",
-    oralBiasNote:
-      "When injection avoidance matters, the blend is usually framed in topical or cosmetic-education context only.",
     citations: [
-      {
-        label: "Pickart & Margolina 2018, International Journal of Molecular Sciences",
-        doi: "10.3390/ijms19071987",
-      },
-      {
-        label: "Pickart 2012, BioMed Research International",
-        doi: "10.1155/2012/648108",
-      },
-      {
-        label: "Pickart 2014, BioMed Research International",
-        doi: "10.1155/2014/151479",
-      },
+      { label: "Pickart L, Margolina A. Int J Mol Sci. 2018;19(7):1987", doi: "10.3390/ijms19071987" },
+      { label: "Pickart L, et al. BioMed Res Int. 2012;2012:648108", doi: "10.1155/2012/648108" },
+      { label: "Pickart L, et al. BioMed Res Int. 2014;2014:151479", doi: "10.1155/2014/151479" },
     ],
-    educationUrl: "https://peptidelaunch.com/education/glow-blend",
-    blendDisclosure:
-      "Blend rationale is internal educational positioning anchored to the GHK-Cu literature above.",
   },
   tesamorelin: {
     id: "tesamorelin",
     name: "Tesamorelin",
-    slug: "tesamorelin",
     category: "peptide",
-    supportLevel: "stronger",
-    overview:
-      "Tesamorelin is often referenced in body-composition discussions involving growth-hormone signaling and adiposity-related outcomes in research settings.",
-    beginnerAngle:
-      "For a body-composition review, Tesamorelin is often one of the clearer literature-backed anchors to discuss first.",
-    advancedAngle:
-      "Advanced analyses may compare Tesamorelin with other GH-axis tools for a more tailored stack design conversation.",
-    citations: [
-      {
-        label: "Falutz 2007, New England Journal of Medicine",
-        doi: "10.1056/NEJMoa064318",
-      },
-      {
-        label: "Stanley & Grinspoon 2012, Expert Opinion on Pharmacotherapy",
-        doi: "10.1517/14656566.2012.717851",
-      },
-      {
-        label: "Koutkia 2010, Clinical Infectious Diseases",
-        doi: "10.1086/650534",
-      },
+    whatItDoes:
+      "Tesamorelin is a synthetic GHRH analog studied clinically for pulsatile GH release and downstream IGF-1 effects, with the best-established literature in visceral adiposity settings.",
+    researchDosing:
+      "Most clinical literature centers on 2 mg once daily in approved-use studies, while research summaries sometimes frame a broader 1-2 mg/day discussion.",
+    warnings: [
+      "Watch IGF-1 elevation, glucose intolerance, active malignancy, pregnancy, and concurrent GH-axis agents.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/tesamorelin",
+    citations: [
+      { label: "Falutz J, et al. N Engl J Med. 2007;357:2359-2370", doi: "10.1056/NEJMoa064318" },
+      { label: "Stanley TL, Grinspoon SK. Expert Opin Pharmacother. 2012;13(14):2155-2166", doi: "10.1517/14656566.2012.717851" },
+      { label: "Koutkia P, et al. Clin Infect Dis. 2010;50(5):729-735", doi: "10.1086/650534" },
+    ],
   },
   ipamorelin: {
     id: "ipamorelin",
     name: "Ipamorelin",
-    slug: "ipamorelin",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "Ipamorelin is frequently included in GH-secretagogue research conversations focused on body-composition and recovery signaling.",
-    beginnerAngle:
-      "It commonly appears as a companion piece to a primary body-composition anchor rather than as a standalone concept for beginners.",
-    advancedAngle:
-      "Advanced stacks use Ipamorelin to add nuance around GH-pulse style signaling in educational comparisons.",
-    citations: [
-      {
-        label: "Raun 1998, European Journal of Endocrinology",
-        doi: "10.1530/eje.0.1390552",
-      },
-      {
-        label: "Gobburu 1999, Pharmaceutical Research",
-        doi: "10.1023/A:1011947611357",
-      },
-      {
-        label: "Johansen 1999, Growth Hormone & IGF Research",
-        doi: "10.1054/ghir.1999.0090",
-      },
+    whatItDoes:
+      "Ipamorelin is a selective ghrelin receptor agonist studied for growth hormone pulse amplification with relatively minimal cortisol and prolactin activity compared with older GHRPs.",
+    warnings: [
+      "GH/IGF-axis effects can matter for glucose regulation, malignancy, pregnancy, and stacking with other secretagogues.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/ipamorelin",
+    citations: [
+      { label: "Raun K, et al. Eur J Endocrinol. 1998;139(5):552-561", doi: "10.1530/eje.0.1390552" },
+      { label: "Gobburu JV, et al. Pharm Res. 1999;16(9):1412-1416", doi: "10.1023/A:1011947611357" },
+      { label: "Johansen PB, et al. Growth Horm IGF Res. 1999;9(2):106-113", doi: "10.1054/ghir.1999.0090" },
+    ],
   },
   "cjc-1295": {
     id: "cjc-1295",
     name: "CJC-1295",
-    slug: "cjc-1295",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "CJC-1295 is usually discussed as a GH-axis research tool, especially in educational comparisons with other body-composition support peptides.",
-    beginnerAngle:
-      "For beginners, it is often kept as an alternate to simplify stack complexity.",
-    advancedAngle:
-      "Advanced users often see CJC-1295 as a way to refine the GH-axis portion of a larger body-composition stack.",
-    citations: [
-      {
-        label: "Teichman 2006, Journal of Clinical Endocrinology & Metabolism",
-        doi: "10.1210/jc.2005-1532",
-      },
-      {
-        label: "Ionescu 2006, Journal of Clinical Endocrinology & Metabolism",
-        doi: "10.1210/jc.2006-1226",
-      },
+    whatItDoes:
+      "CJC-1295 is a GHRH analog studied for pituitary GH release and IGF-1 elevation, with DAC and no-DAC variants carrying different kinetics.",
+    warnings: [
+      "Same GH-axis cautions apply: glucose issues, edema/carpal tunnel context, malignancy, and stacking with other secretagogues.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/cjc-1295",
+    citations: [
+      { label: "Teichman SL, et al. J Clin Endocrinol Metab. 2006;91(3):799-805", doi: "10.1210/jc.2005-1532" },
+      { label: "Ionescu M, Frohman LA. J Clin Endocrinol Metab. 2006;91(12):4792-4797", doi: "10.1210/jc.2006-1226" },
+    ],
   },
   "aod-9604": {
     id: "aod-9604",
     name: "AOD-9604",
-    slug: "aod-9604",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "AOD-9604 is often reviewed in the context of adiposity-related research and body-composition educational discussions.",
-    beginnerAngle:
-      "Beginners usually encounter AOD-9604 as an optional add-on rather than the foundation of a stack.",
-    advancedAngle:
-      "In more layered analyses, AOD-9604 can widen the body-composition discussion beyond one GH-axis mechanism.",
-    citations: [
-      {
-        label: "Ng 2000, Obesity Research",
-      },
-      {
-        label: "Heffernan 2006, Obesity Research Clinical Practice",
-      },
-      {
-        label: "Kemp 2009, Journal of Endocrinology",
-      },
+    whatItDoes:
+      "AOD-9604 is a modified hGH fragment studied for lipolysis and fat-metabolism signaling without the full anabolic profile of growth hormone.",
+    warnings: [
+      "Long-term safety data is limited.",
+      "Use caution in endocrine disorders, metabolic polypharmacy, pregnancy, and malignancy contexts.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/aod-9604",
+    citations: [
+      { label: "Ng FM, et al. Obes Res. 2000;8(7):529-537" },
+      { label: "Heffernan MA, et al. obesity literature on hGH fragment 176-191" },
+      { label: "Kemp M, et al. J Endocrinol. 2009" },
+    ],
   },
   "mots-c": {
     id: "mots-c",
     name: "MOTS-C",
-    slug: "mots-c",
     category: "peptide",
-    supportLevel: "stronger",
-    overview:
-      "MOTS-C is frequently discussed in metabolic flexibility, exercise adaptation, and healthy-aging research settings.",
-    beginnerAngle:
-      "For longevity-focused reviews, MOTS-C provides a relatively coherent foundation before adding more speculative layers.",
-    advancedAngle:
-      "Advanced stacks often use MOTS-C as the metabolic anchor around which mitochondrial and healthy-aging ideas are organized.",
-    citations: [
-      {
-        label: "Lee 2015, Cell Metabolism",
-        doi: "10.1016/j.cmet.2015.02.009",
-      },
-      {
-        label: "Reynolds 2021, Cell Metabolism",
-        doi: "10.1016/j.cmet.2021.03.001",
-      },
-      {
-        label: "Kim 2018, PNAS",
-        doi: "10.1073/pnas.1811989115",
-      },
+    whatItDoes:
+      "MOTS-C is a mitochondrial-derived peptide studied for AMPK activation, metabolic stress adaptation, insulin sensitivity, and exercise-mimetic signaling.",
+    researchDosing:
+      "Human exploratory literature is limited, but educational summaries commonly discuss 5-10 mg research contexts in longevity circles.",
+    warnings: [
+      "Human data is limited.",
+      "Use caution around glucose-lowering therapies, intense training stress, pregnancy, and cachexia contexts.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/mots-c",
+    citations: [
+      { label: "Lee C, et al. Cell Metab. 2015;21(3):443-454", doi: "10.1016/j.cmet.2015.02.009" },
+      { label: "Reynolds JC, et al. Cell Metab. 2021;33(4):805-815.e7", doi: "10.1016/j.cmet.2021.03.001" },
+      { label: "Kim KH, et al. Proc Natl Acad Sci USA. 2018;115(48):12375-12380", doi: "10.1073/pnas.1811989115" },
+    ],
   },
   epitalon: {
     id: "epitalon",
     name: "Epitalon",
-    slug: "epitalon",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "Epitalon usually appears in healthy-aging and longevity discussions with emphasis on exploratory literature rather than settled conclusions.",
-    beginnerAngle:
-      "It is typically introduced as a secondary longevity concept after a stronger metabolic anchor is established.",
-    advancedAngle:
-      "Advanced stacks use Epitalon to broaden the educational discussion toward aging-related signaling themes.",
-    citations: [
-      {
-        label: "Khavinson 2003, Bulletin of Experimental Biology and Medicine",
-      },
-      {
-        label: "Anisimov 2003, Bulletin of Experimental Biology and Medicine",
-      },
-      {
-        label: "Khavinson 2020, Drugs & Aging",
-      },
+    whatItDoes:
+      "Epitalon is a synthetic tetrapeptide studied for telomerase activity, circadian regulation, pineal signaling, and healthy-aging hypotheses.",
+    warnings: [
+      "Human data remains small and region-specific.",
+      "Avoid strong anti-aging claims and keep this firmly exploratory.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/epitalon",
+    citations: [
+      { label: "Khavinson VKh, et al. Bull Exp Biol Med. 2003;135(5):509-512" },
+      { label: "Khavinson V, et al. Neuro Endocrinol Lett. 2002;23 Suppl 1:44-47" },
+      { label: "Anisimov VN, et al. Exp Gerontol. 2003;38(1-2):41-46", doi: "10.1016/S0531-5565(02)00174-0" },
+    ],
   },
   "nad-plus": {
     id: "nad-plus",
     name: "NAD+",
-    slug: "nad-plus",
     category: "cofactor",
-    supportLevel: "stronger",
-    overview:
-      "NAD+ pathway support is a common thread in educational reviews of energy metabolism, cognitive resilience, and healthy-aging research.",
-    beginnerAngle:
-      "For beginners, NAD+ is often easier to understand as a context layer rather than a highly specialized stack centerpiece.",
-    advancedAngle:
-      "Advanced analyses often use NAD+ to connect metabolic, cognitive, and longevity goals into one coherent framework.",
-    oralBiasNote:
-      "For non-injection preferences, NAD+ support conversations usually expand toward oral precursor and lifestyle-context education.",
-    citations: [
-      {
-        label: "Yoshino 2021, Science",
-        doi: "10.1126/science.abe9985",
-      },
-      {
-        label: "Rajman 2018, Cell Metabolism",
-        doi: "10.1016/j.cmet.2018.02.011",
-      },
-      {
-        label: "Covarrubias 2021, Nature Reviews Molecular Cell Biology",
-        doi: "10.1038/s41580-020-00313-x",
-      },
+    whatItDoes:
+      "NAD+ is a central redox cofactor studied in mitochondrial energy production, DNA repair, sirtuin and PARP biology, and aging-related bioenergetics.",
+    warnings: [
+      "Clinical use can involve flushing or nausea depending on route.",
+      "Use caution around methylation support context, polypharmacy, and cancer-metabolism discussions.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/nad-plus",
+    citations: [
+      { label: "Yoshino J, et al. Science. 2021;372(6547):1224-1229", doi: "10.1126/science.abe9985" },
+      { label: "Rajman L, Chwalek K, Sinclair DA. Cell Metab. 2018;27(3):529-547", doi: "10.1016/j.cmet.2018.02.011" },
+      { label: "Covarrubias AJ, et al. Nat Rev Mol Cell Biol. 2021;22:119-141", doi: "10.1038/s41580-020-00313-x" },
+    ],
   },
   selank: {
     id: "selank",
     name: "Selank",
-    slug: "selank",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "Selank is commonly referenced in research-oriented discussions involving stress response, calm focus, and sleep-adjacent recovery context.",
-    beginnerAngle:
-      "It is a practical anchor for cognitive and sleep-related educational reviews because the framing is straightforward.",
-    advancedAngle:
-      "Advanced stacks often pair Selank with nootropic or recovery-support compounds to widen the discussion without overcomplicating the base rationale.",
-    citations: [
-      {
-        label: "Zozulya 2008, Bulletin of Experimental Biology and Medicine",
-      },
-      {
-        label: "Andreeva 2010, Neuroscience and Behavioral Physiology",
-      },
-      {
-        label: "Volkova 2016, Bulletin of Experimental Biology and Medicine",
-      },
+    whatItDoes:
+      "Selank is a tuftsin-derived peptide studied for GABAergic modulation, stress resilience, immune-neuro interaction, and calm-focus effects in preclinical and Russian clinical literature.",
+    researchDosing:
+      "Research discussions often reference intranasal use around 250-500 mcg, though protocol details vary and should remain educational only.",
+    routeNote:
+      "Selank is often favored when someone prefers intranasal, non-injection-first research options.",
+    warnings: [
+      "Western safety data is sparse.",
+      "Use caution with sedatives, anxiolytics, psychiatric polypharmacy, and pregnancy.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/selank",
+    citations: [
+      { label: "Zozulya AA, et al. Bull Exp Biol Med. 2008;146(3):334-338" },
+      { label: "Andreeva LA, et al. Neurosci Behav Physiol. 2010;40(7):745-748" },
+      { label: "Volkova A, et al. Bull Exp Biol Med. 2016;161(4):470-473" },
+    ],
   },
   semax: {
     id: "semax",
     name: "Semax",
-    slug: "semax",
     category: "peptide",
-    supportLevel: "moderate",
-    overview:
-      "Semax is typically positioned in educational content around cognition, neurotrophic signaling, and mental-performance research contexts.",
-    beginnerAngle:
-      "For beginners, Semax usually serves as the clearest cognitive-performance companion to Selank.",
-    advancedAngle:
-      "Advanced users often use Semax to deepen the stack's neurocognitive angle while pairing it with metabolic support context.",
-    citations: [
-      {
-        label: "Ashmarin 1997, Neuroscience and Behavioral Physiology",
-      },
-      {
-        label: "Levitskaya 2008, Bulletin of Experimental Biology and Medicine",
-      },
-      {
-        label: "Grivennikov 2007, Russian Journal of Bioorganic Chemistry",
-      },
+    whatItDoes:
+      "Semax is an ACTH(4-10)-derived peptide studied for neurotrophic signaling, BDNF modulation, attention and focus, and stress adaptation.",
+    researchDosing:
+      "Research discussions often reference intranasal 200-600 mcg contexts, but published protocols vary and should stay study-tethered only.",
+    routeNote:
+      "Semax is commonly positioned as an intranasal option when injections are not preferred.",
+    warnings: [
+      "Safety literature is limited outside Russian clinical practice.",
+      "Use caution with stimulants, psychiatric medications, seizure history, and pregnancy.",
     ],
-    educationUrl: "https://peptidelaunch.com/education/semax",
+    citations: [
+      { label: "Ashmarin IP, et al. Neurosci Behav Physiol. 1997;27(4):409-413" },
+      { label: "Levitskaya NG, et al. Bull Exp Biol Med. 2008;146(3):322-325" },
+      { label: "Grivennikov IA, Dolotov OV. Russ J Bioorg Chem. 2007;33(6):589-598" },
+    ],
   },
   dsip: {
     id: "dsip",
     name: "DSIP",
-    slug: "dsip",
     category: "peptide",
-    supportLevel: "limited",
-    overview:
-      "DSIP is included only as a contextual sleep-related research note because the available literature base here is limited.",
-    beginnerAngle:
-      "For beginners, DSIP is best framed as background context rather than a primary recommendation.",
-    advancedAngle:
-      "Advanced sleep-focused reviews may mention DSIP as a literature gap area rather than a high-confidence stack anchor.",
+    whatItDoes:
+      "DSIP is a sleep-related peptide sometimes discussed in recovery circles, but the evidence base remains limited compared with other tools in this quiz.",
+    warnings: ["Keep DSIP clearly contextual because the literature support is thin."],
+    citations: [{ label: "Limited literature support in the master reference; contextual only" }],
+  },
+  klow: {
+    id: "klow",
+    name: "KLOW Blend",
+    category: "blend",
+    whatItDoes:
+      "KLOW is an internal blend concept that combines BPC-157, TB-500, GHK-Cu, and KPV for multi-pathway recovery positioning.",
+    productNote: "Our product note: KLOW blend ($175) contains BPC-157 + TB-500 + GHK-Cu + KPV.",
+    warnings: ["Blend language should stay educational and anchored to the underlying component literature."],
     citations: [
-      {
-        label: "Limited available literature in this tool; presented as contextual research note only",
-      },
+      { label: "BPC-157, TB-500, and GHK-Cu literature from the master reference support the blend rationale" },
     ],
-    educationUrl: "https://peptidelaunch.com/education/dsip",
+  },
+  glow: {
+    id: "glow",
+    name: "GLOW Blend",
+    category: "blend",
+    whatItDoes:
+      "GLOW is a GHK-Cu-driven internal hair and skin support concept used to organize cosmetic and follicle-support research discussion.",
+    productNote: "Our product note: GLOW blend is positioned around GHK-Cu-led hair and skin support education.",
+    warnings: ["Keep blend language cosmetic/research-oriented and avoid treatment claims."],
+    citations: [{ label: "Pickart GHK-Cu literature underpins the blend rationale" }],
   },
 };

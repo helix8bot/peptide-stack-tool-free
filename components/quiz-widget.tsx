@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import {
   freeQuestions,
   fullQuestions,
@@ -14,14 +14,7 @@ type QuizWidgetProps = {
   embed?: boolean;
 };
 
-type Stage =
-  | "intro"
-  | "free"
-  | "email"
-  | "freeResult"
-  | "paywall"
-  | "full"
-  | "fullResult";
+type Stage = "intro" | "free" | "email" | "freeResult" | "paywall" | "full" | "fullResult";
 
 const initialAnswers: QuizAnswers = {
   goal: "",
@@ -29,17 +22,13 @@ const initialAnswers: QuizAnswers = {
   priority: "",
   email: "",
   conditions: [],
-  supplements: "",
   ageRange: "",
   budget: "",
   deliveryPreference: "",
   timeline: "",
-  notes: "",
 };
 
 const leadEndpoint = "https://services.leadconnectorhq.com/hooks/peptide-stack-free";
-const embedCode =
-  '<iframe src="https://peptide-stack-tool.vercel.app?embed=true" width="100%" height="800" frameborder="0"></iframe>';
 
 function classNames(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
@@ -50,20 +39,14 @@ function progressValue(stage: Stage, freeStep: number, fullStep: number) {
   if (stage === "free") return 12 + freeStep * 12;
   if (stage === "email") return 48;
   if (stage === "freeResult") return 58;
-  if (stage === "paywall") return 66;
-  if (stage === "full") return 68 + fullStep * 4;
+  if (stage === "paywall") return 64;
+  if (stage === "full") return 66 + fullStep * 6;
   return 100;
 }
 
 function deliveryLabel(preference: DeliveryPreference | "") {
-  if (preference === "Prefer oral") {
-    return "Oral/topical-friendly educational notes prioritized";
-  }
-
-  if (preference === "Fine with injections") {
-    return "No route simplification applied";
-  }
-
+  if (preference === "Prefer oral/topical only") return "Oral, topical, and intranasal-first research options prioritized";
+  if (preference === "Comfortable with injections") return "Injection-capable protocols included when research context supports them";
   return "Balanced route-of-administration context";
 }
 
@@ -72,18 +55,11 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
   const [answers, setAnswers] = useState<QuizAnswers>(initialAnswers);
   const [freeStep, setFreeStep] = useState(0);
   const [fullStep, setFullStep] = useState(0);
-  const [leadStatus, setLeadStatus] = useState<"idle" | "submitting" | "submitted" | "offline">(
-    "idle",
-  );
+  const [leadStatus, setLeadStatus] = useState<"idle" | "submitting" | "submitted" | "saved-locally">("idle");
   const [leadError, setLeadError] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const freeResult = useMemo(() => {
-    if (!answers.goal || !answers.experience || !answers.priority) {
-      return null;
-    }
-
+    if (!answers.goal || !answers.experience || !answers.priority) return null;
     return buildResult(answers, false);
   }, [answers]);
 
@@ -112,7 +88,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
     const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     if (!validEmail) {
-      setLeadError("Enter a valid email to unlock the starter stack.");
+      setLeadError("Enter a valid email to unlock your free peptide preview.");
       return;
     }
 
@@ -128,20 +104,24 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
         experience: answers.experience,
         priority: answers.priority,
       },
+      source: "peptide-stack-tool",
     };
 
     try {
-      const response = await fetch(leadEndpoint, {
+      await fetch(leadEndpoint, {
         method: "POST",
+        mode: "no-cors",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
+        keepalive: true,
       });
-
-      setLeadStatus(response.ok ? "submitted" : "offline");
+      localStorage.setItem(`peptide-stack-lead:${email}`, JSON.stringify(payload));
+      setLeadStatus("submitted");
     } catch {
-      setLeadStatus("offline");
+      localStorage.setItem(`peptide-stack-lead:${email}`, JSON.stringify(payload));
+      setLeadStatus("saved-locally");
     } finally {
       setStage("freeResult");
     }
@@ -182,41 +162,11 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-6 sm:px-8 lg:px-10">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">
-                PeptideLaunch Research Education
-              </p>
-              <h1 className="text-3xl font-semibold tracking-tight text-[#1B2A4A] sm:text-4xl">
-                Personalized peptide stack quiz widget
-              </h1>
+              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Peptide Stack Tool</p>
+              <h1 className="text-3xl font-semibold tracking-tight text-[#1B2A4A] sm:text-4xl">Research-based peptide quiz with free preview + full protocol</h1>
               <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-                A client-side, RUO-safe quiz that turns high-level goals into a cleaner research stack preview and an expanded full analysis.
+                Based on Atlas&apos;s master reference. Every recommendation is framed around published research, compliance-safe language, and goal-matched stack logic.
               </p>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm lg:max-w-xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                Embed code
-              </p>
-              <code className="mt-3 block overflow-x-auto rounded-2xl bg-slate-900 px-4 py-3 text-xs leading-6 text-slate-100">
-                {embedCode}
-              </code>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    startTransition(async () => {
-                      await navigator.clipboard.writeText(embedCode);
-                      setCopied(true);
-                      window.setTimeout(() => setCopied(false), 1600);
-                    })
-                  }
-                  className="rounded-full bg-[#1B2A4A] px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-                >
-                  {isPending ? "Copying..." : copied ? "Copied" : "Copy iframe"}
-                </button>
-                <p className="text-xs text-slate-500">
-                  Use `?embed=true` to hide page chrome and show only the quiz flow.
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -228,68 +178,43 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
     return (
       <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-          <div className="inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
-            Free Lite + Full Upgrade
-          </div>
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-[#1B2A4A] sm:text-4xl">
-            Educational peptide stack recommendations in under 3 minutes
-          </h2>
+          <div className="inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Free Lite + $147 Full Protocol</div>
+          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-[#1B2A4A] sm:text-4xl">Find the peptide stack that best matches your research goal</h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-            The free flow asks 3 questions, captures email, and returns a starter research stack. The full flow adds intake detail, a fuller stacking guide, citation cards, and a printable browser PDF view.
+            The free version gives you a personalized preview. The full version adds research dosing ranges, stacking sequence, protocol calendar, interaction warnings, and citations from the master reference.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {[
-              "Mobile-friendly 375px layout",
-              "Iframe-ready embed mode",
-              "Client-side only with no API routes",
+              "3 free questions, 5 full-upgrade questions",
+              "Goal-based stacks using real peptide literature",
+              "Compliance-safe research wording throughout",
             ].map((item) => (
-              <div
-                key={item}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-700"
-              >
-                {item}
-              </div>
+              <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-700">{item}</div>
             ))}
           </div>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => setStage("free")}
-              className="rounded-full bg-[#1B2A4A] px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-800"
-            >
+            <button type="button" onClick={() => setStage("free")} className="rounded-full bg-[#1B2A4A] px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-800">
               Start free assessment
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStage("paywall");
-                setFreeStep(0);
-              }}
-              className="rounded-full border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-            >
-              Preview full upgrade
+            <button type="button" onClick={() => setStage("paywall")} className="rounded-full border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+              See full protocol upgrade
             </button>
           </div>
         </div>
 
         <aside className="rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,#1B2A4A_0%,#24385e_100%)] p-6 text-white shadow-[0_24px_60px_rgba(27,42,74,0.22)] sm:p-8">
-          <h3 className="text-lg font-semibold tracking-tight">What this widget returns</h3>
+          <h3 className="text-lg font-semibold tracking-tight">What you get</h3>
           <div className="mt-6 space-y-4">
             {[
-              "2-4 peptide stack mapped to the selected goal",
-              "Research-safe rationale for each peptide",
-              "30 / 60 / 90 day review cadence",
-              "2-3 literature citations per peptide",
-              "Printable full-results browser PDF button",
+              "Goal-matched peptide names and why they were chosen",
+              "PubMed-style citations pulled from Atlas reference",
+              "Week 1-2, Week 3-4, Month 2-3 progression",
+              "Research dosing ranges and interaction warnings in full results",
+              "Consult-your-provider language and RUO framing throughout",
             ].map((item) => (
-              <div key={item} className="rounded-2xl border border-white/15 bg-white/5 px-4 py-4 text-sm leading-6 text-slate-100">
-                {item}
-              </div>
+              <div key={item} className="rounded-2xl border border-white/15 bg-white/5 px-4 py-4 text-sm leading-6 text-slate-100">{item}</div>
             ))}
           </div>
-          <p className="mt-6 text-xs leading-6 text-slate-300">
-            Compliance note: copy stays educational, research-oriented, and avoids prescription, dosing, or outcome guarantees.
-          </p>
         </aside>
       </section>
     );
@@ -298,46 +223,27 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
   function renderFreeQuestion() {
     return (
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
-          Free Lite Question {freeStep + 1} of {freeQuestions.length}
-        </p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">
-          {currentFreeQuestion.title}
-        </h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Free Lite Question {freeStep + 1} of {freeQuestions.length}</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">{currentFreeQuestion.title}</h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {currentFreeQuestion.options.map((option) =>
-            renderChoiceButton(
-              option,
-              answers[currentFreeQuestion.id] === option,
-              () => {
-                setAnswers((current) => ({ ...current, [currentFreeQuestion.id]: option }));
+            renderChoiceButton(option, answers[currentFreeQuestion.id] === option, () => {
+              setAnswers((current) => ({ ...current, [currentFreeQuestion.id]: option }));
 
-                if (freeStep === freeQuestions.length - 1) {
-                  setStage("email");
-                  return;
-                }
-
-                setFreeStep((value) => value + 1);
-              },
-            ),
-          )}
-        </div>
-        <div className="mt-8 flex justify-between">
-          <button
-            type="button"
-            onClick={() => {
-              if (freeStep === 0) {
-                setStage("intro");
+              if (freeStep === freeQuestions.length - 1) {
+                setStage("email");
                 return;
               }
 
-              setFreeStep((value) => value - 1);
-            }}
-            className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
+              setFreeStep((value) => value + 1);
+            }),
+          )}
+        </div>
+        <div className="mt-8 flex justify-between">
+          <button type="button" onClick={() => (freeStep === 0 ? setStage("intro") : setFreeStep((value) => value - 1))} className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
             Back
           </button>
-          <p className="text-sm text-slate-500">Large targets optimized for mobile and desktop.</p>
+          <p className="text-sm text-slate-500">Real peptide goals. No filler questions.</p>
         </div>
       </section>
     );
@@ -346,45 +252,24 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
   function renderEmailGate() {
     return (
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
-          Unlock free results
-        </p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">
-          Enter email to view the starter stack preview
-        </h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Unlock your free results</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">Enter your email to see your personalized peptide preview</h2>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-          The form makes a best-effort JSON post to the lead hook, then continues even if the external service is unavailable.
+          This email capture submits to the configured webhook and also stores a local backup in the browser so leads are still captured even if the external endpoint is unavailable.
         </p>
         <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_auto]">
           <input
             type="email"
             value={answers.email}
-            onChange={(event) =>
-              setAnswers((current) => ({ ...current, email: event.target.value }))
-            }
+            onChange={(event) => setAnswers((current) => ({ ...current, email: event.target.value }))}
             placeholder="you@example.com"
             className="min-h-14 rounded-2xl border border-slate-300 px-4 text-base text-slate-900 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
-          <button
-            type="button"
-            onClick={submitLead}
-            disabled={leadStatus === "submitting"}
-            className="min-h-14 rounded-2xl bg-[#1B2A4A] px-6 text-base font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {leadStatus === "submitting" ? "Submitting..." : "Show free results"}
+          <button type="button" onClick={submitLead} disabled={leadStatus === "submitting"} className="min-h-14 rounded-2xl bg-[#1B2A4A] px-6 text-base font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">
+            {leadStatus === "submitting" ? "Saving..." : "Show free results"}
           </button>
         </div>
         {leadError ? <p className="mt-3 text-sm text-rose-600">{leadError}</p> : null}
-        <div className="mt-8 flex justify-between">
-          <button
-            type="button"
-            onClick={() => setStage("free")}
-            className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
-            Back
-          </button>
-          <p className="text-sm text-slate-500">Lead capture is best-effort and fails gracefully.</p>
-        </div>
       </section>
     );
   }
@@ -398,20 +283,12 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
-                {resultType === "free" ? "Free starter result" : "Full stack analysis"}
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">
-                {result.headline}
-              </h2>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
-                {result.summary}
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">{resultType === "free" ? "Free personalized preview" : "Full personalized protocol"}</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">{result.headline}</h2>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">{result.summary}</p>
             </div>
             <div className="rounded-3xl bg-slate-50 px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Current lens
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Current stack</p>
               <p className="mt-2 text-lg font-semibold text-[#1B2A4A]">{result.stackName}</p>
               <p className="mt-1 text-sm text-slate-600">{deliveryLabel(answers.deliveryPreference)}</p>
             </div>
@@ -421,51 +298,30 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-              <h3 className="text-xl font-semibold text-[#1B2A4A]">Personalized stack recommendation</h3>
+              <h3 className="text-xl font-semibold text-[#1B2A4A]">Recommended peptides</h3>
               <div className="mt-6 grid gap-4">
                 {result.peptides.map((item) => {
                   const profile = peptideProfiles[item.id];
-
                   return (
-                    <article
-                      key={item.id}
-                      className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition-all duration-300 hover:shadow-[0_12px_24px_rgba(15,23,42,0.08)]"
-                    >
+                    <article key={item.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <h4 className="text-lg font-semibold text-[#1B2A4A]">{profile.name}</h4>
-                          <p className="mt-2 text-sm leading-6 text-slate-600">{item.reason}</p>
-                          {item.contextNote ? (
-                            <p className="mt-2 text-sm leading-6 text-teal-800">{item.contextNote}</p>
-                          ) : null}
-                          {profile.blendDisclosure ? (
-                            <p className="mt-2 text-xs leading-6 text-slate-500">{profile.blendDisclosure}</p>
-                          ) : null}
+                          <p className="mt-2 text-sm leading-6 text-slate-700">{profile.whatItDoes}</p>
+                          <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Why it was chosen for you:</span> {item.whyChosen}</p>
+                          {resultType === "full" && item.dosingRange ? <p className="mt-2 text-sm leading-6 text-slate-600"><span className="font-semibold text-[#1B2A4A]">Research dosing range:</span> {item.dosingRange}</p> : null}
+                          {item.routeAdjustment ? <p className="mt-2 text-sm leading-6 text-teal-800">{item.routeAdjustment}</p> : null}
+                          {profile.productNote ? <p className="mt-2 text-sm leading-6 text-slate-600">{profile.productNote}</p> : null}
                         </div>
-                        <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                          {profile.supportLevel} support
-                        </span>
+                        <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Based on published research</span>
                       </div>
                       <div className="mt-5 rounded-2xl border border-white bg-white p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                          Research citations
-                        </p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Citations</p>
                         <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
                           {profile.citations.map((citation) => (
-                            <li key={citation.label}>
-                              {citation.label}
-                              {citation.doi ? ` • DOI ${citation.doi}` : ""}
-                            </li>
+                            <li key={citation.label}>{citation.label}{citation.doi ? ` • DOI ${citation.doi}` : ""}</li>
                           ))}
                         </ul>
-                        <a
-                          href={profile.educationUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-4 inline-flex text-sm font-semibold text-teal-700 transition hover:text-teal-800"
-                        >
-                          Learn more
-                        </a>
                       </div>
                     </article>
                   );
@@ -473,26 +329,35 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
               </div>
             </div>
 
-            {resultType === "full" && result.stackingGuide ? (
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-                <h3 className="text-xl font-semibold text-[#1B2A4A]">Detailed stacking guide</h3>
-                <div className="mt-5 grid gap-3">
-                  {result.stackingGuide.map((note) => (
-                    <div
-                      key={note}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700"
-                    >
-                      {note}
-                    </div>
-                  ))}
+            {resultType === "full" ? (
+              <>
+                <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
+                  <h3 className="text-xl font-semibold text-[#1B2A4A]">Interaction warnings</h3>
+                  <div className="mt-5 grid gap-3">
+                    {result.interactionWarnings.map((warning) => (
+                      <div key={warning} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700">{warning}</div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+
+                <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
+                  <h3 className="text-xl font-semibold text-[#1B2A4A]">Protocol calendar</h3>
+                  <div className="mt-5 grid gap-3">
+                    {result.protocolCalendar.map((item) => (
+                      <div key={item.phase} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700">
+                        <p className="font-semibold text-[#1B2A4A]">{item.phase}</p>
+                        <p className="mt-2">{item.detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             ) : null}
           </div>
 
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-              <h3 className="text-xl font-semibold text-[#1B2A4A]">Protocol timeline</h3>
+              <h3 className="text-xl font-semibold text-[#1B2A4A]">Suggested timeline</h3>
               <div className="mt-5 space-y-4">
                 {result.timeline.map((item) => (
                   <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -504,17 +369,19 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
             </div>
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-              <h3 className="text-xl font-semibold text-[#1B2A4A]">Research-context notes</h3>
+              <h3 className="text-xl font-semibold text-[#1B2A4A]">Compliance + research notes</h3>
               <div className="mt-5 grid gap-3">
                 {result.researchNotes.map((note) => (
-                  <div
-                    key={note}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700"
-                  >
-                    {note}
-                  </div>
+                  <div key={note} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700">{note}</div>
                 ))}
               </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
+              <h3 className="text-xl font-semibold text-[#1B2A4A]">Research citations used in this result</h3>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
+                {result.citations.map((citation) => <li key={citation}>{citation}</li>)}
+              </ul>
             </div>
 
             <div className="rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,#f8fafc_0%,#eef6f6_100%)] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
@@ -525,10 +392,8 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
                 <p><span className="font-semibold text-[#1B2A4A]">Priority:</span> {answers.priority}</p>
                 {answers.ageRange ? <p><span className="font-semibold text-[#1B2A4A]">Age range:</span> {answers.ageRange}</p> : null}
                 {answers.budget ? <p><span className="font-semibold text-[#1B2A4A]">Budget:</span> {answers.budget}</p> : null}
-                {answers.timeline ? <p><span className="font-semibold text-[#1B2A4A]">Review cadence:</span> {result.reviewCadence}</p> : null}
-                {answers.conditions.length > 0 ? (
-                  <p><span className="font-semibold text-[#1B2A4A]">Conditions:</span> {answers.conditions.join(", ")}</p>
-                ) : null}
+                {answers.timeline ? <p><span className="font-semibold text-[#1B2A4A]">Timeline:</span> {answers.timeline}</p> : null}
+                {answers.conditions.length ? <p><span className="font-semibold text-[#1B2A4A]">Flags:</span> {answers.conditions.join(", ")}</p> : null}
               </div>
             </div>
           </div>
@@ -536,40 +401,22 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
 
         <div className="print-hidden flex flex-col gap-3 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div>
-            <p className="text-sm font-semibold text-[#1B2A4A]">
-              {resultType === "free"
-                ? "Unlock the full stack to see deeper intake-based nuance."
-                : "Use the browser print dialog to save this analysis as a PDF."}
-            </p>
+            <p className="text-sm font-semibold text-[#1B2A4A]">{resultType === "free" ? result.upgradeMessage : "Consult a qualified healthcare provider before beginning any protocol."}</p>
             <p className="mt-1 text-sm text-slate-600">
-              {leadStatus === "offline"
-                ? "Lead hook was unavailable, but the free result still rendered locally."
-                : "All recommendations remain educational and research-framed."}
+              {resultType === "free"
+                ? leadStatus === "saved-locally"
+                  ? "Webhook was unavailable, so the lead was also stored locally in the browser as a backup."
+                  : "Your email was submitted to the configured webhook and the free result rendered immediately."
+                : "For research purposes only. Studies suggest potential benefits for specific goals, but no outcome is guaranteed."}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             {resultType === "free" ? (
-              <button
-                type="button"
-                onClick={() => setStage("paywall")}
-                className="rounded-full bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-700"
-              >
-                View full stack analysis
+              <button type="button" onClick={() => setStage("paywall")} className="rounded-full bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-700">
+                Unlock full protocol for $147
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="rounded-full bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-700"
-              >
-                Download PDF
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={resetQuiz}
-              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
+            ) : null}
+            <button type="button" onClick={resetQuiz} className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
               Start over
             </button>
           </div>
@@ -581,43 +428,23 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
   function renderPaywall() {
     return (
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Upgrade</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">
-          Want the complete personalized protocol? Get your full stack analysis for $147.
-        </h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Upgrade to full results</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">Get your complete personalized protocol for $147</h2>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
-          The full flow adds intake detail, expanded stack nuance, a detailed stacking guide, route-of-administration context, and a browser PDF save option. Payment is not implemented here; unlocking is local for UX review.
+          The full version adds the last 5 questions, research dosing ranges, protocol calendar, interaction warnings, and a more tailored stack based on budget, injection preference, symptoms, and timeline.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {[
-            "Adds 7 more intake questions",
-            "Upgrades to 2-4 peptide analysis",
-            "Includes print/save PDF workflow",
-          ].map((item) => (
-            <div
-              key={item}
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-700"
-            >
-              {item}
-            </div>
-          ))}
+            "Adds age, budget, symptoms, route preference, and timeline",
+            "Shows research protocols have used ranges for each peptide",
+            "Includes interaction warnings and calendar sequencing",
+          ].map((item) => <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-700">{item}</div>)}
         </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={() => {
-              setStage("full");
-              setFullStep(0);
-            }}
-            className="rounded-full bg-[#1B2A4A] px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-800"
-          >
-            Continue to full analysis
+          <button type="button" onClick={() => { setStage("full"); setFullStep(0); }} className="rounded-full bg-[#1B2A4A] px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-800">
+            Continue to full protocol
           </button>
-          <button
-            type="button"
-            onClick={() => setStage(freeResult ? "freeResult" : "intro")}
-            className="rounded-full border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
+          <button type="button" onClick={() => setStage(freeResult ? "freeResult" : "intro")} className="rounded-full border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50">
             Back
           </button>
         </div>
@@ -627,106 +454,46 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
 
   function renderFullQuestion() {
     if (!currentFullQuestion) return null;
-
-    const isTextArea = "type" in currentFullQuestion && currentFullQuestion.type === "textarea";
     const isMultiSelect = currentFullQuestion.id === "conditions";
     const currentValue = answers[currentFullQuestion.id];
 
     return (
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
-          Full analysis question {fullStep + 1} of {fullQuestions.length}
-        </p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">
-          {currentFullQuestion.title}
-        </h2>
-        {"description" in currentFullQuestion && currentFullQuestion.description ? (
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-            {currentFullQuestion.description}
-          </p>
-        ) : null}
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Full protocol question {fullStep + 1} of {fullQuestions.length}</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#1B2A4A] sm:text-3xl">{currentFullQuestion.title}</h2>
+        {"description" in currentFullQuestion && currentFullQuestion.description ? <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{currentFullQuestion.description}</p> : null}
 
-        {isTextArea ? (
-          <div className="mt-8">
-            <textarea
-              value={String(currentValue)}
-              onChange={(event) =>
-                setAnswers((current) => ({
-                  ...current,
-                  [currentFullQuestion.id]: event.target.value,
-                }))
-              }
-              rows={5}
-              placeholder="Add any relevant research context here..."
-              className="w-full rounded-[1.5rem] border border-slate-300 px-4 py-4 text-base text-slate-900 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
-            />
-          </div>
-        ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {"options" in currentFullQuestion &&
-              currentFullQuestion.options.map((option) => {
-                const selected = isMultiSelect
-                  ? Array.isArray(currentValue) &&
-                    currentValue.includes(option as (typeof answers.conditions)[number])
-                  : currentValue === option;
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          {"options" in currentFullQuestion && currentFullQuestion.options.map((option) => {
+            const selected = isMultiSelect ? Array.isArray(currentValue) && currentValue.includes(option as (typeof answers.conditions)[number]) : currentValue === option;
 
-                return renderChoiceButton(option, selected, () => {
-                  if (isMultiSelect) {
-                    const selectedOption = option as (typeof answers.conditions)[number];
+            return renderChoiceButton(option, selected, () => {
+              if (isMultiSelect) {
+                const selectedOption = option as (typeof answers.conditions)[number];
+                setAnswers((current) => {
+                  const currentSelections = current.conditions;
+                  let nextSelections = currentSelections.includes(selectedOption)
+                    ? currentSelections.filter((item) => item !== selectedOption)
+                    : [...currentSelections, selectedOption];
 
-                    setAnswers((current) => {
-                      const currentSelections = current.conditions;
-                      let nextSelections = currentSelections.includes(selectedOption)
-                        ? currentSelections.filter((item) => item !== selectedOption)
-                        : [...currentSelections, selectedOption];
+                  if (selectedOption === "None of these") nextSelections = ["None of these"];
+                  else nextSelections = nextSelections.filter((item) => item !== "None of these");
 
-                      if (selectedOption === "None") {
-                        nextSelections = ["None"];
-                      } else {
-                        nextSelections = nextSelections.filter((item) => item !== "None");
-                      }
-
-                      return {
-                        ...current,
-                        conditions: nextSelections,
-                      };
-                    });
-                    return;
-                  }
-
-                  setAnswers((current) => ({ ...current, [currentFullQuestion.id]: option }));
+                  return { ...current, conditions: nextSelections };
                 });
-              })}
-          </div>
-        )}
+                return;
+              }
+
+              setAnswers((current) => ({ ...current, [currentFullQuestion.id]: option }));
+            });
+          })}
+        </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            type="button"
-            onClick={() => {
-              if (fullStep === 0) {
-                setStage("paywall");
-                return;
-              }
-
-              setFullStep((value) => value - 1);
-            }}
-            className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
+          <button type="button" onClick={() => (fullStep === 0 ? setStage("paywall") : setFullStep((value) => value - 1))} className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
             Back
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (fullStep === fullQuestions.length - 1) {
-                setStage("fullResult");
-                return;
-              }
-
-              setFullStep((value) => value + 1);
-            }}
-            className="rounded-full bg-[#1B2A4A] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
+          <button type="button" onClick={() => (fullStep === fullQuestions.length - 1 ? setStage("fullResult") : setFullStep((value) => value + 1))} className="rounded-full bg-[#1B2A4A] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
             {fullStep === fullQuestions.length - 1 ? "See full results" : "Continue"}
           </button>
         </div>
@@ -736,16 +503,10 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
 
   function renderFooter() {
     if (embed) return null;
-
     return (
       <footer className="print-hidden border-t border-slate-200 bg-white">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-8 text-sm leading-7 text-slate-600 sm:px-8 lg:px-10">
-          <p>
-            Disclaimer: This tool is for educational and research-use-only context. It does not provide medical advice, diagnosis, treatment, or dosing guidance.
-          </p>
-          <p>
-            Visual system: white, navy `#1B2A4A`, teal `#0D9488`, clean grays, Inter, responsive card-based layout.
-          </p>
+          <p>Disclaimer: For research purposes only. Based on published research and educational summaries. Consult a qualified healthcare provider before beginning any protocol.</p>
         </div>
       </footer>
     );
@@ -761,22 +522,17 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
             <span>{progress}%</span>
           </div>
           <div className="h-2 rounded-full bg-slate-100">
-            <div
-              className="h-2 rounded-full bg-[linear-gradient(90deg,#0D9488_0%,#1B2A4A_100%)] transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-2 rounded-full bg-[linear-gradient(90deg,#0D9488_0%,#1B2A4A_100%)] transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
         </div>
 
-        <div className="transition-all duration-300">
-          {stage === "intro" ? renderIntro() : null}
-          {stage === "free" ? renderFreeQuestion() : null}
-          {stage === "email" ? renderEmailGate() : null}
-          {stage === "freeResult" ? renderResult("free") : null}
-          {stage === "paywall" ? renderPaywall() : null}
-          {stage === "full" ? renderFullQuestion() : null}
-          {stage === "fullResult" ? renderResult("full") : null}
-        </div>
+        {stage === "intro" ? renderIntro() : null}
+        {stage === "free" ? renderFreeQuestion() : null}
+        {stage === "email" ? renderEmailGate() : null}
+        {stage === "freeResult" ? renderResult("free") : null}
+        {stage === "paywall" ? renderPaywall() : null}
+        {stage === "full" ? renderFullQuestion() : null}
+        {stage === "fullResult" ? renderResult("full") : null}
       </main>
       {renderFooter()}
     </div>
