@@ -55,7 +55,7 @@ const conditionMap: Partial<Record<HealthCondition, GoalOption>> = {
   "Poor sleep quality": "Sleep & Recovery",
 };
 const routeMatch: Partial<Record<AdministrationPreferenceOption, PeptideId[]>> = {
-  "Sublingual drops (easy, no needles)": ["bpc-157", "nad-plus"],
+  "Sublingual drops (easy, no needles)": ["nad-plus"],
   "Nasal spray (fast absorption, simple)": ["selank", "semax"],
   "Topical cream/serum (targeted application)": ["ghk-cu"],
 };
@@ -67,81 +67,89 @@ const educationalLinks = [
 
 const blendDefinitions: Partial<Record<PeptideId, { contains: PeptideId[]; label: string }>> = {
   klow: { label: "KLOW Blend", contains: ["bpc-157", "tb-500", "ghk-cu"] },
-  glow: { label: "GLOW Blend", contains: ["bpc-157", "tb-500"] },
+  glow: { label: "GLOW Blend", contains: ["ghk-cu", "bpc-157", "tb-500"] },
+  wolverine: { label: "Wolverine Blend", contains: ["bpc-157", "tb-500"] },
+  regeno: { label: "REGENO Blend", contains: ["bpc-157", "tb-500", "ghk-cu"] },
 };
+
+const glp1Products: PeptideId[] = ["semaglutide", "tirzepatide", "retatrutide", "cagrilintide-glp1"];
 
 const interactionLibrary: Partial<Record<PeptideId, string[]>> = {
   "bpc-157": [
     "BPC-157 can usually share the same recovery injection with TB-500 when both are part of the protocol.",
-    "If KLOW or GLOW is already in the stack, separate standalone BPC-157 is usually redundant.",
+    "If KLOW, GLOW, Wolverine, or REGENO is already in the stack, standalone BPC-157 is redundant and should be removed.",
   ],
   "tb-500": [
-    "TB-500 is commonly paired with BPC-157 in the same recovery window and can often be combined in one syringe in educational stacking discussions.",
-    "If KLOW or GLOW is already in the stack, separate standalone TB-500 is usually redundant.",
+    "TB-500 is commonly paired with BPC-157 in the same recovery window.",
+    "If KLOW, GLOW, Wolverine, or REGENO is already in the stack, standalone TB-500 is redundant and should be removed.",
   ],
   "ghk-cu": [
     "GHK-Cu is usually better kept as its own topical routine instead of being forced into a GH-axis injection schedule.",
-    "If KLOW is already in the stack, separate standalone GHK-Cu is usually unnecessary unless there is a deliberate topical add-on reason.",
+    "If KLOW, GLOW, or REGENO is already in the stack, separate standalone GHK-Cu is usually unnecessary unless there is a deliberate topical add-on reason.",
   ],
-  tesamorelin: ["Tesamorelin plus other GH-axis compounds increases complexity fast, so keep the plan intentional and fasted."],
-  ipamorelin: ["If a blend already contains Ipamorelin, remove the standalone version to avoid duplicate GH-axis exposure."],
-  "cjc-1295": ["If a blend already contains CJC-1295, remove the standalone version to avoid duplicate GH-axis exposure."],
   klow: ["KLOW contains BPC-157 + TB-500 + GHK-Cu + KPV, so there is no need for separate BPC-157, TB-500, or GHK-Cu beside it."],
-  glow: ["GLOW contains BPC-157 + TB-500, so there is no need for separate BPC-157 or TB-500 beside it."],
+  glow: ["GLOW contains GHK-Cu + BPC-157 + TB-500, so there is no need for separate GHK-Cu, BPC-157, or TB-500 beside it."],
+  wolverine: ["Wolverine contains BPC-157 + TB-500, so there is no need for separate BPC-157 or TB-500 beside it."],
+  regeno: ["REGENO contains BPC-157 + TB-500 + GHK-Cu, so there is no need for separate BPC-157, TB-500, or GHK-Cu beside it."],
+  semaglutide: ["Semaglutide should be the only GLP-1-family product in the stack."],
+  tirzepatide: ["Tirzepatide should be the only GLP-1-family product in the stack."],
+  retatrutide: ["Retatrutide should be the only GLP-1-family product in the stack."],
+  "cagrilintide-glp1": ["Cagrilintide/GLP-1 should be the only GLP-1-family product in the stack."],
 };
 
 const basePlans: Record<GoalOption, { stackName: string; summary: string; primary: PeptideId[]; enhanced: PeptideId[]; premium: PeptideId[]; longTermAdds: PeptideId[]; conditionAdds: Partial<Record<HealthCondition, PeptideId[]>>; rationale: Partial<Record<PeptideId, string>>; genericComparison: string[] }> = {
   "Pain & Injury Recovery": {
     stackName: "Repair, Recovery & Inflammation Research Stack",
     summary: "For recovery goals, the engine starts with repair-first literature, then decides whether a convenience blend or standalone components make more sense.",
-    primary: ["bpc-157"],
-    enhanced: ["bpc-157", "tb-500"],
-    premium: ["bpc-157", "tb-500", "ss-31", "klow"],
+    primary: ["wolverine"],
+    enhanced: ["klow", "ss-31"],
+    premium: ["klow", "ss-31", "regeno"],
     longTermAdds: ["ss-31"],
     conditionAdds: { "Digestive stress or gut sensitivity": ["bpc-157"], "Slow workout recovery": ["ss-31"] },
     rationale: {
-      "bpc-157": "You signaled a repair-first goal, so the stack opens with the clearest connective-tissue anchor.",
-      "tb-500": "TB-500 was layered in because your answers support a broader remodeling strategy.",
+      wolverine: "Wolverine gives you a clean BPC-157 + TB-500 recovery entry point without juggling separate recovery vials.",
+      klow: "KLOW gives you the broader convenience version of BPC-157 + TB-500 + GHK-Cu + KPV, so the stack stays cleaner without redundant standalone vials.",
+      regeno: "REGENO is a broader recovery blend when the intake supports a more complete recovery-first stack.",
       "ss-31": "SS-31 appears when recovery is tied to deeper mitochondrial resilience demands.",
-      klow: "KLOW gives you the convenience version of BPC-157 + TB-500 + GHK-Cu + KPV, so the stack can stay cleaner without redundant standalone vials.",
+      "bpc-157": "BPC-157 appears as a standalone only when the intake clearly points away from a containing blend or mentions prior BPC-157 use directly.",
     },
     genericComparison: [
-      "A generic recovery result would show everyone BPC-157 and stop there. Your version also decides whether KLOW should replace the individual parts.",
-      "The engine now removes redundant standalone peptides whenever a blend already contains them.",
+      "A generic recovery result would show everyone BPC-157 and TB-500 side by side. Your version decides whether KLOW, Wolverine, or REGENO should replace the individual parts.",
+      "The engine removes redundant standalone peptides whenever a blend already contains them, and it also blocks the blend if standalone overlap is already intentional.",
     ],
   },
   "Hair Restoration & Skin Health": {
     stackName: "Hair, Scalp & Skin Research Stack",
     summary: "For hair and skin goals, the engine leans into follicle biology and convenience-first cosmetic consistency rather than forcing a generic peptide stack.",
     primary: ["ghk-cu"],
-    enhanced: ["ghk-cu", "glow"],
-    premium: ["ghk-cu", "glow", "nad-plus"],
+    enhanced: ["glow", "nad-plus"],
+    premium: ["glow", "nad-plus", "ghk-cu"],
     longTermAdds: ["nad-plus"],
     conditionAdds: { "Visible skin aging or texture changes": ["nad-plus"] },
     rationale: {
       "ghk-cu": "GHK-Cu is the cleanest first fit because it sits at the center of hair and skin signaling literature.",
-      glow: "GLOW was surfaced as the convenience-first blend path, so users do not need separate BPC-157 and TB-500 when the blend already covers them.",
+      glow: "GLOW was surfaced as the convenience-first blend path, so users do not need separate GHK-Cu, BPC-157, and TB-500 when the blend already covers them.",
       "nad-plus": "NAD+ shows up when the profile expands beyond appearance alone and into resilience or healthy-aging context.",
     },
-    genericComparison: [
-      "A generic hair result would just show GHK-Cu. Your version decides whether a convenience blend like GLOW should replace standalone recovery components.",
-    ],
+    genericComparison: ["A generic hair result would just show GHK-Cu. Your version decides whether a convenience blend like GLOW should replace the overlapping standalone recovery components."],
   },
   "Body Composition & Fat Loss": {
     stackName: "Body Composition Research Stack",
-    summary: "For body-composition goals, the engine favors adiposity and GH-axis literature first, then adds complexity only when answers support it.",
-    primary: ["tesamorelin"],
-    enhanced: ["tesamorelin", "ipamorelin"],
-    premium: ["tesamorelin", "ipamorelin", "cjc-1295", "aod-9604"],
-    longTermAdds: ["cjc-1295"],
-    conditionAdds: { "Low energy or fatigue": ["ipamorelin"], "Weight management resistance": ["aod-9604"] },
+    summary: "For body-composition goals, the engine chooses one GLP-1-family anchor, then adds only non-GLP-1 support when the answers justify it.",
+    primary: ["semaglutide"],
+    enhanced: ["semaglutide", "aod-9604"],
+    premium: ["tirzepatide", "aod-9604", "tesamorelin"],
+    longTermAdds: ["aod-9604"],
+    conditionAdds: { "Low energy or fatigue": ["tesamorelin"], "Weight management resistance": ["aod-9604"] },
     rationale: {
-      tesamorelin: "Tesamorelin stayed central because it has the clearest clinical footing in this category.",
-      ipamorelin: "Ipamorelin was added because your profile can support a fuller GH-pulse discussion.",
-      "cjc-1295": "CJC-1295 only enters when the answers justify a more advanced GH-axis stack.",
-      "aod-9604": "AOD-9604 appears when the intake leans more directly into fat-loss framing.",
+      semaglutide: "Semaglutide is the cleanest first GLP-1 anchor for a straightforward weight-loss-first plan.",
+      tirzepatide: "Tirzepatide only replaces Semaglutide when the intake supports a more advanced metabolic approach, but it never appears beside another GLP-1.",
+      retatrutide: "Retatrutide is reserved for advanced investigational context and never appears beside another GLP-1.",
+      "cagrilintide-glp1": "The cagrilintide/GLP-1 blend counts as your one GLP-1-family anchor, not an add-on beside another incretin.",
+      "aod-9604": "AOD-9604 appears when the intake leans more directly into fat-loss framing without overlapping the GLP-1 receptor pathway.",
+      tesamorelin: "Tesamorelin is non-GLP-1 support when the body-composition picture also points toward GH-axis context.",
     },
-    genericComparison: ["Generic fat-loss outputs overstack GH-axis compounds immediately. Your result keeps complexity earned, not assumed."],
+    genericComparison: ["Generic fat-loss outputs overstack incretins and GH-axis compounds immediately. Your result keeps one GLP-1-family anchor and earns any extra complexity."],
   },
   "Longevity & Anti-Aging": {
     stackName: "Longevity & Mitochondrial Research Stack",
@@ -173,17 +181,20 @@ function unique<T>(items: T[]) { return Array.from(new Set(items)); }
 function determineGoal(answers: QuizAnswers): GoalOption { if (answers.goal) return answers.goal; const inferred = answers.conditions.find((c) => conditionMap[c]); return inferred ? conditionMap[inferred]! : "Pain & Injury Recovery"; }
 function determineBaseStack(answers: QuizAnswers, goal: GoalOption) { const plan = basePlans[goal]; const budget = answers.budget ? budgetRank[answers.budget] : 2; if (answers.experience === "Brand new — I want a simple starting point" || budget <= 2) return [...plan.primary]; if (answers.experience === "I’m experienced and comfortable with more nuance" || budget >= 4) return [...plan.premium]; return [...plan.enhanced]; }
 
+function freeText(text: string) { return text.toLowerCase(); }
+function mentions(text: string, terms: string[]) { const t = freeText(text); return terms.some((term) => t.includes(term)); }
+
 function applyBlendPreference(peptides: PeptideId[], answers: QuizAnswers, goal: GoalOption): PeptideId[] {
   const preference: BlendPreferenceOption | "" = answers.blendPreference;
   if (goal === "Pain & Injury Recovery") {
     if (preference === "Ready-made blends (convenience)") return unique(["klow", ...peptides]);
-    if (preference === "Individual peptides (maximum control)") return unique(peptides.filter((id) => id !== "klow").concat(["bpc-157", "tb-500"]));
-    if (preference === "Mix of both") return unique(["klow", "bpc-157", "tb-500", ...peptides]);
+    if (preference === "Individual peptides (maximum control)") return unique(peptides.filter((id) => !["klow", "wolverine", "regeno"].includes(id)).concat(["bpc-157", "tb-500"]));
+    if (preference === "Mix of both") return unique(["klow", ...peptides]);
   }
   if (goal === "Hair Restoration & Skin Health") {
     if (preference === "Ready-made blends (convenience)") return unique(["glow", ...peptides]);
     if (preference === "Individual peptides (maximum control)") return unique(peptides.filter((id) => id !== "glow").concat(["ghk-cu"]));
-    if (preference === "Mix of both") return unique(["glow", "ghk-cu", ...peptides]);
+    if (preference === "Mix of both") return unique(["glow", ...peptides]);
   }
   return peptides;
 }
@@ -194,16 +205,45 @@ function applyRoutePreference(peptides: PeptideId[], answers: QuizAnswers) {
   return unique([...(routeMatch[route] ?? []), ...peptides]);
 }
 
-function dedupeBlendComponents(peptides: PeptideId[]) {
-  const present = new Set(peptides);
-  const blocked = new Set<PeptideId>();
-  for (const id of peptides) {
-    const blend = blendDefinitions[id];
-    if (!blend) continue;
-    for (const component of blend.contains) blocked.add(component);
-    if (id === "klow") blocked.add("ghk-cu");
+function enforceBlendDedup(peptides: PeptideId[], answers: QuizAnswers) {
+  let next = [...peptides];
+  const text = `${answers.supplementStack} ${answers.previousExperience}`;
+  const manualStandaloneBpc = mentions(text, ["bpc-157", "bpc 157", "bpc157"]);
+  const manualStandaloneTb = mentions(text, ["tb-500", "tb 500", "tb500"]);
+  const manualStandaloneGhk = mentions(text, ["ghk-cu", "ghk cu", "ghkcu"]);
+
+  if (manualStandaloneBpc || manualStandaloneTb || manualStandaloneGhk) {
+    next = next.filter((id) => !["klow", "glow", "wolverine", "regeno"].includes(id));
+    if (manualStandaloneBpc) next.unshift("bpc-157");
+    if (manualStandaloneTb) next.unshift("tb-500");
+    if (manualStandaloneGhk) next.unshift("ghk-cu");
   }
-  return peptides.filter((id) => !blocked.has(id) || !!blendDefinitions[id]);
+
+  const presentBlends = next.filter((id) => blendDefinitions[id]);
+  if (presentBlends.length) {
+    const blocked = new Set<PeptideId>();
+    for (const blendId of presentBlends) {
+      for (const component of blendDefinitions[blendId]!.contains) blocked.add(component);
+    }
+    next = next.filter((id) => !blocked.has(id) || Boolean(blendDefinitions[id]));
+  }
+
+  return unique(next);
+}
+
+function enforceSingleGlp1(peptides: PeptideId[], answers: QuizAnswers) {
+  let next = [...peptides];
+  const goal = determineGoal(answers);
+  const wantsWeightLoss = goal === "Body Composition & Fat Loss" || answers.conditions.includes("Weight management resistance");
+
+  if (wantsWeightLoss && !next.some((id) => glp1Products.includes(id))) {
+    const advanced = answers.experience === "I’m experienced and comfortable with more nuance" || answers.priority === "I want the most complete stack my budget allows";
+    next.unshift(advanced && answers.budget && budgetRank[answers.budget] >= 4 ? "tirzepatide" : "semaglutide");
+  }
+
+  const firstGlp1 = next.find((id) => glp1Products.includes(id));
+  if (!firstGlp1) return next;
+  return unique(next.filter((id) => id === firstGlp1 || !glp1Products.includes(id)));
 }
 
 function applyAdjustments(base: PeptideId[], answers: QuizAnswers, goal: GoalOption) {
@@ -214,13 +254,18 @@ function applyAdjustments(base: PeptideId[], answers: QuizAnswers, goal: GoalOpt
   if (answers.priority === "I care most about convenience") peptides = applyBlendPreference(peptides, { ...answers, blendPreference: (answers.blendPreference || "Ready-made blends (convenience)") as QuizAnswers["blendPreference"] }, goal);
   if (answers.priority === "I want the most complete stack my budget allows" && answers.budget && budgetRank[answers.budget] >= 3) peptides = unique([...peptides, ...plan.longTermAdds, ...plan.premium]);
   for (const condition of answers.conditions) { if (condition === "None of these") continue; const adds = plan.conditionAdds[condition]; if (adds) peptides = unique([...peptides, ...adds]); }
-  if (answers.lifestyleFactors.includes("Regular exercise (3+ days/week)") && goal === "Pain & Injury Recovery") peptides = unique(["tb-500", ...peptides]);
+  if (goal === "Body Composition & Fat Loss" && (answers.conditions.includes("Chronic joint or tendon discomfort") || answers.conditions.includes("Slow workout recovery"))) {
+    peptides = unique(["klow", ...peptides]);
+  }
+  if (answers.lifestyleFactors.includes("Regular exercise (3+ days/week)") && goal === "Pain & Injury Recovery") peptides = unique(["klow", ...peptides]);
   if (answers.lifestyleFactors.includes("Outdoor/sun exposure") && goal === "Hair Restoration & Skin Health") peptides = unique(["ghk-cu", ...peptides]);
   if (answers.lifestyleFactors.includes("Poor sleep (<6 hours)") && goal === "Longevity & Anti-Aging") peptides = unique(["nad-plus", ...peptides]);
-  if (answers.timeline === "I want a 30-day starting plan") peptides = peptides.filter((id) => !["epitalon", "ss-31"].includes(id));
+  if (answers.timeline === "I want a 30-day starting plan") peptides = peptides.filter((id) => !["epitalon", "ss-31", "retatrutide"].includes(id));
   if (answers.timeline === "I’m building a long-term optimization plan") peptides = unique([...peptides, ...plan.longTermAdds]);
-  peptides = dedupeBlendComponents(applyRoutePreference(applyBlendPreference(peptides, answers, goal), answers));
-  if (answers.sensitivity === "Very sensitive (start low)") peptides = peptides.filter((id, index) => index < 3 || !!blendDefinitions[id]);
+  peptides = applyRoutePreference(applyBlendPreference(peptides, answers, goal), answers);
+  peptides = enforceBlendDedup(peptides, answers);
+  peptides = enforceSingleGlp1(peptides, answers);
+  if (answers.sensitivity === "Very sensitive (start low)") peptides = peptides.filter((id, index) => index < 3 || Boolean(blendDefinitions[id]));
   return unique(peptides);
 }
 
@@ -235,7 +280,7 @@ function buildPeptideReason(goal: GoalOption, peptideId: PeptideId, answers: Qui
   const plan = basePlans[goal];
   const profile = peptideProfiles[peptideId];
   const blend = blendDefinitions[peptideId];
-  const blendNote = blend ? `${profile.name} (contains ${blend.contains.map((id) => peptideProfiles[id].name).join(" + ")}) — no need for separate ${blend.contains.map((id) => peptideProfiles[id].name).join(" or ")}.` : undefined;
+  const blendNote = blend ? `${profile.name} (contains ${blend.contains.map((id) => peptideProfiles[id].name).join(" + ")}) — the engine removed overlapping standalone components to avoid redundancy.` : undefined;
   return {
     id: peptideId,
     whyChosen: blendNote ?? plan.rationale[peptideId] ?? `This compound stayed in the stack because it supports the ${goal.toLowerCase()} pathway you prioritized and still fit your route, budget, and complexity preferences.`,
@@ -274,21 +319,7 @@ function buildDailyProtocolSchedule(peptides: PeptideId[]): DailyProtocolItem[] 
   const warnings: string[] = [];
   let injections = 0;
 
-  const hasBpc = peptides.includes("bpc-157");
-  const hasTb = peptides.includes("tb-500");
-  const hasKlow = peptides.includes("klow");
-  const hasGlow = peptides.includes("glow");
-
-  if (hasKlow) { morning.push("KLOW Blend (contains BPC-157 + TB-500 + GHK-Cu + KPV) — single convenience injection."); injections += 1; }
-  else if (hasGlow) { morning.push("GLOW Blend (contains BPC-157 + TB-500) — single convenience injection."); injections += 1; }
-  else if (hasBpc && hasTb) { morning.push("BPC-157 + TB-500 can combine in the same syringe — 1 morning recovery injection."); injections += 1; }
-  else {
-    if (hasBpc) { morning.push("BPC-157 fasted in the morning."); injections += 1; }
-    if (hasTb) { evening.push("TB-500 on designated recovery days."); injections += 1; }
-  }
-
   for (const id of peptides) {
-    if (["bpc-157", "tb-500", "klow", "glow"].includes(id)) continue;
     const profile = peptideProfiles[id];
     for (const item of profile.dailySchedule ?? []) {
       const line = `${profile.name}: ${item.detail}`;
@@ -303,7 +334,7 @@ function buildDailyProtocolSchedule(peptides: PeptideId[]): DailyProtocolItem[] 
   return [
     { label: "Morning", detail: morning.length ? morning.join(" ") : "No dedicated morning compounds required." },
     { label: "Evening", detail: evening.length ? evening.join(" ") : "No dedicated evening compounds required." },
-    { label: "Combination + safety notes", detail: warnings.length ? warnings.join(" ") : "Main reduction comes from combining compatible recovery compounds and removing redundant standalone peptides when a blend already contains them." },
+    { label: "Combination + safety notes", detail: warnings.length ? warnings.join(" ") : "Main reduction comes from combining compatible recovery compounds, removing redundant standalone peptides when a blend already contains them, and keeping GLP-1 products to one per stack." },
     { label: "Total daily injections", detail: `Estimated routine: ${Math.max(1, injections)} injections or application blocks per day after compatibility-based consolidation.` },
   ];
 }
@@ -313,6 +344,7 @@ function buildResearchNotes(answers: QuizAnswers, goal: GoalOption, isFull: bool
     "This tool compiles publicly available research for educational purposes only. It is not medical advice.",
     "Every dosing mention is framed as published research or internal educational protocol language, not a personal recommendation.",
     `Your result was adjusted for ${goal.toLowerCase()} goals, plus the constraints you shared around budget, sensitivity, and administration style.`,
+    "The engine removes overlapping standalone compounds when a containing blend is selected, and it limits GLP-1-family products to one per stack.",
   ];
   if (answers.supplementStack.trim()) notes.push(`Current supplement context considered: ${answers.supplementStack.trim()}.`);
   if (answers.previousExperience.trim()) notes.push(`Previous peptide context considered: ${answers.previousExperience.trim()}.`);
@@ -324,6 +356,7 @@ function buildWarnings(peptides: PeptideId[]) {
   return unique(peptides.flatMap((id) => peptideProfiles[id].warnings).concat([
     "Stacking multiple GH-axis compounds increases the need to think about glucose regulation, IGF-1 context, and overall protocol complexity.",
     "Blends simplify logistics, but once a blend is in the stack the matching standalone peptides should usually be removed to avoid redundant exposure.",
+    "Only one GLP-1-family product should appear in the same stack because these products overlap heavily in receptor pathway coverage.",
     "If pregnancy, breastfeeding, cancer history, psychiatric medication use, endocrine medication use, or anticoagulation is part of the picture, a qualified healthcare provider should review the protocol context first.",
   ]));
 }
@@ -337,7 +370,7 @@ export function buildResult(answers: QuizAnswers, isFull: boolean): QuizResult {
   peptides = isFull ? peptides.slice(0, 4) : peptides.slice(0, 2);
   const resultPeptides = peptides.map((id) => buildPeptideReason(goal, id, answers));
   return {
-    headline: isFull ? `Your personalized ${goal.toLowerCase()} protocol` : `Your personalized ${goal.toLowerCase()} preview`,
+    headline: isFull ? `Your personalized ${goal.toLowerCase()} protocol` : `Your personalized ${goal.toLowerCase()} report`,
     summary: plan.summary,
     stackName: plan.stackName,
     peptides: resultPeptides,
@@ -351,6 +384,6 @@ export function buildResult(answers: QuizAnswers, isFull: boolean): QuizResult {
     educationalLinks,
     reportIntro: "This report is designed to feel like the condensed version of a high-end consultation: clear, practical, research-grounded, and tailored to the signals you gave us.",
     complianceDisclaimer: "This tool compiles publicly available research for educational purposes only. It is not medical advice. Consult a qualified healthcare provider before beginning any protocol.",
-    upgradeMessage: isFull ? undefined : "Unlock the full $147 protocol to see the complete stack, comprehensive dosing research with citations, daily schedule logic, and interaction guidance.",
+    upgradeMessage: undefined,
   };
 }

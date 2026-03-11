@@ -8,9 +8,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Peptide Stack Recommendation Quiz",
+  title: "Peptide Stack Tool",
   description:
-    "Customer-facing peptide stack recommendation quiz widget with standalone and iframe-ready embed modes.",
+    "Customer-facing peptide stack recommendation tool with full unlocked reporting, blend deduplication, and print-ready PDF output.",
 };
 
 export default function RootLayout({
