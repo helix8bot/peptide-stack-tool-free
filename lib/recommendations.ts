@@ -72,6 +72,9 @@ const blendDefinitions: Partial<Record<PeptideId, { contains: PeptideId[]; label
   regeno: { label: "REGENO Blend", contains: ["bpc-157", "tb-500", "ghk-cu"] },
 };
 
+const recoveryBlendPriority: PeptideId[] = ["klow", "regeno", "glow", "wolverine"];
+const recoveryBlendIds = new Set<PeptideId>(recoveryBlendPriority);
+const standaloneRecoveryComponents = new Set<PeptideId>(["bpc-157", "tb-500", "ghk-cu"]);
 const glp1Products: PeptideId[] = ["semaglutide", "tirzepatide", "retatrutide", "cagrilintide-glp1"];
 
 const interactionLibrary: Partial<Record<PeptideId, string[]>> = {
@@ -205,6 +208,18 @@ function applyRoutePreference(peptides: PeptideId[], answers: QuizAnswers) {
   return unique([...(routeMatch[route] ?? []), ...peptides]);
 }
 
+function normalizeRecoveryBlends(peptides: PeptideId[]) {
+  const recoveryBlends = recoveryBlendPriority.filter((id) => peptides.includes(id));
+  if (!recoveryBlends.length) return peptides;
+
+  const chosenBlend = recoveryBlends[0];
+  return peptides.filter((id) => {
+    if (recoveryBlendIds.has(id)) return id === chosenBlend;
+    if (standaloneRecoveryComponents.has(id)) return false;
+    return true;
+  });
+}
+
 function enforceBlendDedup(peptides: PeptideId[], answers: QuizAnswers) {
   let next = [...peptides];
   const text = `${answers.supplementStack} ${answers.previousExperience}`;
@@ -213,11 +228,13 @@ function enforceBlendDedup(peptides: PeptideId[], answers: QuizAnswers) {
   const manualStandaloneGhk = mentions(text, ["ghk-cu", "ghk cu", "ghkcu"]);
 
   if (manualStandaloneBpc || manualStandaloneTb || manualStandaloneGhk) {
-    next = next.filter((id) => !["klow", "glow", "wolverine", "regeno"].includes(id));
+    next = next.filter((id) => !recoveryBlendIds.has(id));
     if (manualStandaloneBpc) next.unshift("bpc-157");
     if (manualStandaloneTb) next.unshift("tb-500");
     if (manualStandaloneGhk) next.unshift("ghk-cu");
   }
+
+  next = normalizeRecoveryBlends(next);
 
   const presentBlends = next.filter((id) => blendDefinitions[id]);
   if (presentBlends.length) {
@@ -276,14 +293,28 @@ function buildRouteAdjustment(id: PeptideId, answers: QuizAnswers) {
   return peptideProfiles[id].routeNote;
 }
 
+function buildGoalMatchedReason(goal: GoalOption, peptideId: PeptideId) {
+  const profile = peptideProfiles[peptideId];
+
+  if (glp1Products.includes(peptideId)) {
+    return `${profile.name} stayed in the stack because your intake pointed to body-composition and weight-management support, and the engine keeps incretin coverage to one GLP-1-family anchor.`;
+  }
+
+  if (["aod-9604", "tesamorelin"].includes(peptideId)) {
+    return `${profile.name} stayed in the stack because your intake supported a body-composition-focused add-on without duplicating the GLP-1 pathway.`;
+  }
+
+  return `This compound stayed in the stack because it supports the ${goal.toLowerCase()} pathway you prioritized and still fit your route, budget, and complexity preferences.`;
+}
+
 function buildPeptideReason(goal: GoalOption, peptideId: PeptideId, answers: QuizAnswers): ResultPeptide {
   const plan = basePlans[goal];
   const profile = peptideProfiles[peptideId];
   const blend = blendDefinitions[peptideId];
-  const blendNote = blend ? `${profile.name} (contains ${blend.contains.map((id) => peptideProfiles[id].name).join(" + ")}) — the engine removed overlapping standalone components to avoid redundancy.` : undefined;
+  const blendNote = blend ? `${profile.name} (contains ${blend.contains.map((id) => peptideProfiles[id].name).join(" + ")}) — the engine kept this as your one recovery blend and removed overlapping standalone components to avoid redundancy.` : undefined;
   return {
     id: peptideId,
-    whyChosen: blendNote ?? plan.rationale[peptideId] ?? `This compound stayed in the stack because it supports the ${goal.toLowerCase()} pathway you prioritized and still fit your route, budget, and complexity preferences.`,
+    whyChosen: blendNote ?? plan.rationale[peptideId] ?? buildGoalMatchedReason(goal, peptideId),
     dosingRange: profile.researchDosing,
     protocolSummary: profile.protocolSummary,
     frequency: profile.frequency,
