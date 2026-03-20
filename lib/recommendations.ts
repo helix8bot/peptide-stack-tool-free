@@ -73,7 +73,7 @@ const blendDefinitions: Partial<Record<PeptideId, { contains: PeptideId[]; label
 const recoveryBlendPriority: PeptideId[] = ["klow", "glow"];
 const recoveryBlendIds = new Set<PeptideId>(recoveryBlendPriority);
 const standaloneRecoveryComponents = new Set<PeptideId>(["bpc-157", "tb-500", "ghk-cu"]);
-const glp1Products: PeptideId[] = ["semaglutide"];
+const glp1Products: PeptideId[] = ["semaglutide", "tirzepatide", "retatrutide"];
 
 const interactionLibrary: Partial<Record<PeptideId, string[]>> = {
   "bpc-157": [
@@ -90,7 +90,9 @@ const interactionLibrary: Partial<Record<PeptideId, string[]>> = {
   ],
   klow: ["KLOW contains BPC-157 + TB-500 + GHK-Cu + KPV, so there is no need for separate BPC-157, TB-500, or GHK-Cu beside it."],
   glow: ["GLOW contains GHK-Cu + BPC-157 + TB-500, so there is no need for separate GHK-Cu, BPC-157, or TB-500 beside it."],
-  semaglutide: ["Semaglutide should be the only GLP-1-family product in the stack."],
+  semaglutide: ["Semaglutide (single GLP-1 agonist) should be the only incretin-class product in the stack. Do not combine with Tirzepatide or Retatrutide."],
+  tirzepatide: ["Tirzepatide (dual GLP-1 + GIP agonist) should be the only incretin-class product in the stack. Do not combine with Semaglutide or Retatrutide."],
+  retatrutide: ["Retatrutide (triple GLP-1 + GIP + Glucagon agonist) should be the only incretin-class product in the stack. Do not combine with Semaglutide or Tirzepatide. Investigational compound — earlier-stage research."],
 };
 
 const basePlans: Record<GoalOption, { stackName: string; summary: string; primary: PeptideId[]; enhanced: PeptideId[]; premium: PeptideId[]; longTermAdds: PeptideId[]; conditionAdds: Partial<Record<HealthCondition, PeptideId[]>>; rationale: Partial<Record<PeptideId, string>>; genericComparison: string[] }> = {
@@ -127,22 +129,27 @@ const basePlans: Record<GoalOption, { stackName: string; summary: string; primar
       glow: "GLOW was surfaced as the convenience-first blend path, so users do not need separate GHK-Cu, BPC-157, and TB-500 when the blend already covers them.",
       "nad-plus": "NAD+ shows up when the profile expands beyond appearance alone and into resilience or healthy-aging context.",
     },
-    genericComparison: ["A generic hair result would just show GHK-Cu. Your version decides whether a convenience blend like GLOW should replace the overlapping standalone recovery components."],
+    genericComparison: ["A generic hair result would just show GHK-Cu. This version decides whether a convenience blend like GLOW should replace the overlapping standalone recovery components."],
   },
   "Body Composition & Fat Loss": {
     stackName: "Body Composition Research Stack",
-    summary: "For body-composition goals, the engine chooses one GLP-1 anchor, then adds only non-GLP-1 support when the research intake justifies it.",
+    summary: "For body-composition goals, the engine selects one incretin-class compound (single, dual, or triple agonist) based on experience level and budget, then adds only non-GLP-1 support when the research intake justifies it. Only one incretin-class compound is ever included — they should never be stacked together.",
     primary: ["semaglutide"],
-    enhanced: ["semaglutide", "aod-9604"],
-    premium: ["semaglutide", "aod-9604", "tesamorelin"],
+    enhanced: ["tirzepatide", "aod-9604"],
+    premium: ["retatrutide", "aod-9604", "tesamorelin"],
     longTermAdds: ["aod-9604"],
     conditionAdds: { "Low energy or fatigue": ["tesamorelin"], "Weight management resistance": ["aod-9604"] },
     rationale: {
-      semaglutide: "Semaglutide is the primary GLP-1 anchor studied for body-composition and weight-management research.",
-      "aod-9604": "AOD-9604 appears when the intake leans more directly into fat-metabolism research without overlapping the GLP-1 receptor pathway.",
+      semaglutide: "Semaglutide is a single GLP-1 receptor agonist — the most established and well-documented incretin compound. It targets one pathway (GLP-1) for appetite regulation and gastric emptying, making it the cleanest entry point for body-composition research.",
+      tirzepatide: "Tirzepatide is a dual GLP-1 + GIP receptor agonist that activates two incretin pathways simultaneously. Clinical trials show stronger average outcomes than single-target GLP-1 agonists. It replaces (never stacks with) Semaglutide when the research intake supports a more advanced approach.",
+      retatrutide: "Retatrutide is a triple GLP-1 + GIP + Glucagon receptor agonist — the most potent incretin-class compound in current clinical research. It targets three metabolic pathways simultaneously. Earlier-stage research than single or dual agonists, but showing the strongest weight-loss outcomes in trials.",
+      "aod-9604": "AOD-9604 appears when the intake leans more directly into fat-metabolism research without overlapping the incretin receptor pathway.",
       tesamorelin: "Tesamorelin is non-GLP-1 support when the body-composition research picture also points toward GH-axis context.",
     },
-    genericComparison: ["Generic fat-loss outputs overstack GH-axis compounds immediately. This result keeps one GLP-1 anchor and earns any extra complexity based on the research intake."],
+    genericComparison: [
+      "Generic fat-loss outputs overstack incretin compounds or combine multiple GLP-1 products. This result selects exactly one incretin-class compound (single, dual, or triple agonist) matched to experience and budget, then earns any additional complexity.",
+      "The engine educates on the difference: single agonist (GLP-1 only) → dual agonist (GLP-1 + GIP) → triple agonist (GLP-1 + GIP + Glucagon), so the research context is clear.",
+    ],
   },
   "Longevity & Anti-Aging": {
     stackName: "Longevity & Mitochondrial Research Stack",
@@ -150,15 +157,15 @@ const basePlans: Record<GoalOption, { stackName: string; summary: string; primar
     primary: ["mots-c"], enhanced: ["mots-c", "nad-plus"], premium: ["mots-c", "nad-plus", "epitalon"], longTermAdds: ["epitalon"],
     conditionAdds: { "Low energy or fatigue": ["nad-plus"], "Visible skin aging or texture changes": ["epitalon"] },
     rationale: { "mots-c": "MOTS-C gives the longevity category a grounded metabolic anchor in the research literature.", "nad-plus": "NAD+ broadens the energy-and-repair research conversation.", epitalon: "Epitalon is reserved for longer-horizon research protocols." },
-    genericComparison: ["A generic longevity stack throws every trendy molecule together. Your version filters for evidence confidence and timing."],
+    genericComparison: ["A generic longevity stack throws every trendy molecule together. This version filters for evidence confidence and timing."],
   },
   "Cognitive Performance & Focus": {
     stackName: "Cognition, Focus & Calm Research Stack",
     summary: "For cognitive goals, the engine separates stimulation from steadier calm-focus support.",
     primary: ["selank"], enhanced: ["selank", "semax"], premium: ["selank", "semax", "nad-plus"], longTermAdds: ["nad-plus"],
     conditionAdds: { "Brain fog or poor focus": ["semax"], "Low energy or fatigue": ["nad-plus"] },
-    rationale: { selank: "Selank leads because your intake suggests calm-focus support matters.", semax: "Semax was added because your answers indicate attention and drive matter enough for a sharper layer.", "nad-plus": "NAD+ appears when the cognitive picture includes low energy or broader resilience concerns." },
-    genericComparison: ["A generic focus stack would toss Selank and Semax into the same bucket for everyone. Your result differentiates between calm-focus and stimulation."],
+    rationale: { selank: "Selank leads because the intake suggests calm-focus support matters in the research context.", semax: "Semax was added because the intake indicates attention and drive matter enough for a sharper research layer.", "nad-plus": "NAD+ appears when the cognitive picture includes low energy or broader resilience concerns." },
+    genericComparison: ["A generic focus stack would toss Selank and Semax into the same bucket for everyone. This result differentiates between calm-focus and stimulation."],
   },
   "Sleep & Recovery": {
     stackName: "Sleep, Calm & Recovery Research Stack",
@@ -166,7 +173,7 @@ const basePlans: Record<GoalOption, { stackName: string; summary: string; primar
     primary: ["selank"], enhanced: ["selank", "bpc-157"], premium: ["selank", "bpc-157", "mots-c"], longTermAdds: ["mots-c"],
     conditionAdds: { "Digestive stress or gut sensitivity": ["bpc-157"], "Low energy or fatigue": ["mots-c"] },
     rationale: { selank: "Selank leads because it gives the strongest calm-support angle in the research literature without overcomplicating the stack.", "bpc-157": "BPC-157 appears because sleep complaints often overlap with recovery and gut-stress signals in the research.", "mots-c": "MOTS-C shows up when sleep issues appear tied to broader resilience or energy regulation research." },
-    genericComparison: ["A generic sleep result would show one calming peptide and move on. Your report looks at gut flags, fatigue, and recovery context before widening the stack."],
+    genericComparison: ["A generic sleep result would show one calming peptide and move on. This report looks at gut flags, fatigue, and recovery context before widening the stack."],
   },
 };
 
@@ -244,7 +251,8 @@ function enforceSingleGlp1(peptides: PeptideId[], answers: QuizAnswers) {
   const wantsWeightLoss = goal === "Body Composition & Fat Loss" || answers.conditions.includes("Weight management resistance");
 
   if (wantsWeightLoss && !next.some((id) => glp1Products.includes(id))) {
-    next.unshift("semaglutide");
+    const advanced = answers.experience === "I\u2019m experienced and comfortable with more nuance" || answers.priority === "I want the most complete stack my budget allows";
+    next.unshift(advanced && answers.budget && budgetRank[answers.budget] >= 4 ? "tirzepatide" : "semaglutide");
   }
 
   const firstGlp1 = next.find((id) => glp1Products.includes(id));
@@ -266,7 +274,7 @@ function applyAdjustments(base: PeptideId[], answers: QuizAnswers, goal: GoalOpt
   if (answers.lifestyleFactors.includes("Regular exercise (3+ days/week)") && goal === "Pain & Injury Recovery") peptides = unique(["klow", ...peptides]);
   if (answers.lifestyleFactors.includes("Outdoor/sun exposure") && goal === "Hair Restoration & Skin Health") peptides = unique(["ghk-cu", ...peptides]);
   if (answers.lifestyleFactors.includes("Poor sleep (<6 hours)") && goal === "Longevity & Anti-Aging") peptides = unique(["nad-plus", ...peptides]);
-  if (answers.timeline === "I want a 30-day starting plan") peptides = peptides.filter((id) => id !== "epitalon");
+  if (answers.timeline === "I want a 30-day starting plan") peptides = peptides.filter((id) => !["epitalon", "retatrutide"].includes(id));
   if (answers.timeline === "I’m building a long-term optimization plan") peptides = unique([...peptides, ...plan.longTermAdds]);
   peptides = applyRoutePreference(applyBlendPreference(peptides, answers, goal), answers);
   peptides = enforceBlendDedup(peptides, answers);
@@ -286,7 +294,8 @@ function buildGoalMatchedReason(goal: GoalOption, peptideId: PeptideId) {
   const profile = peptideProfiles[peptideId];
 
   if (glp1Products.includes(peptideId)) {
-    return `${profile.name} stayed in the stack because your intake pointed to body-composition and weight-management support, and the engine keeps incretin coverage to one GLP-1-family anchor.`;
+    const agonistClass = peptideId === "semaglutide" ? "single GLP-1 agonist" : peptideId === "tirzepatide" ? "dual GLP-1 + GIP agonist" : "triple GLP-1 + GIP + Glucagon agonist";
+    return `${profile.name} (${agonistClass}) was selected as the incretin-class anchor for this body-composition research stack. Only one incretin compound is included at a time — they target overlapping receptor pathways and should never be stacked together.`;
   }
 
   if (["aod-9604", "tesamorelin"].includes(peptideId)) {

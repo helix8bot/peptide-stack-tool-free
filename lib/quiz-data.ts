@@ -107,7 +107,9 @@ export type PeptideId =
   | "semax"
   | "klow"
   | "glow"
-  | "semaglutide";
+  | "semaglutide"
+  | "tirzepatide"
+  | "retatrutide";
 
 export type DailyScheduleItem = {
   period: "Morning" | "Evening" | "Flexible";
@@ -607,7 +609,7 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     canCombineWith: [],
     shouldNotCombineWith: ["Do not duplicate standalone BPC-157, TB-500, or GHK-Cu beside KLOW unless there is a deliberate reason to override convenience logic."],
     dailySchedule: [{ period: "Morning", detail: "Single convenience-focused recovery injection; no separate BPC-157, TB-500, or GHK-Cu needed." }],
-    productNote: "KLOW blend ($175) contains BPC-157 + TB-500 + GHK-Cu + KPV.",
+    productNote: "KLOW blend contains BPC-157 + TB-500 + GHK-Cu + KPV. Available from research peptide suppliers.",
     warnings: ["Blend language should stay educational and tied to the component research rather than overstating direct blend-specific evidence."],
     citations: [{ label: "Component rationale drawn from BPC-157, TB-500, and GHK-Cu literature in the master reference" }],
   },
@@ -628,7 +630,7 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     blendIngredients: ["ghk-cu", "bpc-157", "tb-500"],
     shouldNotCombineWith: ["Do not duplicate standalone GHK-Cu, BPC-157, or TB-500 when GLOW is already in the stack."],
     dailySchedule: [{ period: "Morning", detail: "Single convenience-focused injection replacing separate GHK-Cu, BPC-157, and TB-500." }],
-    productNote: "GLOW blend contains GHK-Cu + BPC-157 + TB-500, so separate GHK-Cu, BPC-157, or TB-500 is usually unnecessary.",
+    productNote: "GLOW blend contains GHK-Cu + BPC-157 + TB-500, so separate GHK-Cu, BPC-157, or TB-500 is usually unnecessary. Available from research peptide suppliers.",
     warnings: ["Keep blend language cosmetic, educational, and research-oriented."],
     citations: [{ label: "Component rationale drawn from GHK-Cu, BPC-157, and TB-500 literature in the master reference" }],
   },
@@ -636,15 +638,57 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     id: "semaglutide",
     name: "Semaglutide",
     category: "peptide",
-    whatItDoes: "Semaglutide is a GLP-1 receptor agonist studied for appetite regulation, gastric emptying, and weight-management support.",
+    whatItDoes: "Semaglutide is a single-target GLP-1 receptor agonist — the most widely studied compound in the incretin class. It works by mimicking the GLP-1 hormone, which slows gastric emptying, reduces appetite signaling, and supports insulin sensitivity. As a single agonist, it targets one receptor pathway (GLP-1), making it the most established and well-documented entry point for incretin-based weight-management research.",
     researchDosing: "Trial- and label-based weekly titration.",
-    protocolSummary: "Semaglutide protocols are titration-based and should remain tied to published label and trial context.",
+    protocolSummary: "Semaglutide protocols are titration-based and should remain tied to published label and trial context. Most research begins at low doses and titrates upward over several weeks.",
     frequency: "Weekly titration-based schedule",
-    timingSuggestion: "Usually treated as a standalone weekly GLP-1 anchor, not something to stack with another GLP-1.",
+    timingSuggestion: "Usually treated as a standalone weekly GLP-1 anchor. Only one incretin-class compound should be used at a time — do not stack with other GLP-1, GIP, or glucagon agonists.",
     cycleLength: "Multi-week titration",
     loadingPhase: "Start low and titrate per published study or label context.",
     maintenancePhase: "Hold at the lowest effective protocol tier under qualified supervision.",
-    warnings: ["Do not stack with other GLP-1 or incretin agonists in the same protocol.", "GI effects, pancreatitis/gallbladder history, thyroid tumor warnings, pregnancy, and diabetic-medication interactions require caution."],
-    citations: [{ label: "Wilding JPH, et al. N Engl J Med. 2021;384:989-1002", doi: "10.1056/NEJMoa2032183" }],
+    productNote: "Single agonist (GLP-1 only) — the most established incretin compound with the largest body of published clinical trial data. Available from research peptide suppliers.",
+    warnings: ["Do not stack with other GLP-1, GIP, or incretin agonists in the same protocol — only one incretin-class compound at a time.", "GI effects, pancreatitis/gallbladder history, thyroid tumor warnings (MTC/MEN2), pregnancy, and diabetic-medication interactions require caution."],
+    citations: [
+      { label: "Wilding JPH, et al. N Engl J Med. 2021;384:989-1002", doi: "10.1056/NEJMoa2032183" },
+      { label: "Davies M, et al. Lancet. 2021;397(10278):971-984", doi: "10.1016/S0140-6736(21)00213-0" },
+    ],
+  },
+  tirzepatide: {
+    id: "tirzepatide",
+    name: "Tirzepatide",
+    category: "peptide",
+    whatItDoes: "Tirzepatide is a dual-target GLP-1 + GIP receptor agonist — meaning it activates two incretin pathways simultaneously. GLP-1 handles appetite suppression and gastric emptying, while GIP (glucose-dependent insulinotropic polypeptide) adds a second metabolic lever that enhances insulin sensitivity and may improve fat metabolism through different signaling. The dual mechanism is why clinical trials have shown stronger average weight-loss outcomes compared to single GLP-1 agonists alone.",
+    researchDosing: "Trial- and label-based weekly titration.",
+    protocolSummary: "Tirzepatide protocols are titration-based and should remain tied to published trial and label context. The dual-agonist mechanism means titration speed and tolerability may differ from single-agonist compounds.",
+    frequency: "Weekly titration-based schedule",
+    timingSuggestion: "Use as one incretin anchor only. The dual GLP-1 + GIP mechanism means this compound already covers two receptor pathways — adding another GLP-1 product would create dangerous overlap.",
+    cycleLength: "Multi-week titration",
+    loadingPhase: "Start low and titrate per published study or label context.",
+    maintenancePhase: "Hold at the lowest effective protocol tier under qualified supervision.",
+    productNote: "Dual agonist (GLP-1 + GIP) — activates two incretin pathways for potentially stronger metabolic effects than single-target GLP-1 compounds. Available from research peptide suppliers.",
+    warnings: ["Do not stack with other GLP-1, GIP, or incretin agonists in the same protocol — only one incretin-class compound at a time.", "GI effects, pancreatitis/gallbladder history, pregnancy, and diabetic-medication interactions require caution.", "The dual-agonist mechanism may produce stronger effects and side effects compared to single GLP-1 agonists."],
+    citations: [
+      { label: "Jastreboff AM, et al. N Engl J Med. 2022;387:205-216", doi: "10.1056/NEJMoa2206038" },
+      { label: "Frias JP, et al. N Engl J Med. 2021;385:503-515", doi: "10.1056/NEJMoa2107519" },
+    ],
+  },
+  retatrutide: {
+    id: "retatrutide",
+    name: "Retatrutide",
+    category: "peptide",
+    whatItDoes: "Retatrutide is a triple-target GLP-1 + GIP + Glucagon receptor agonist — the most advanced incretin-class compound currently in clinical research. It activates three metabolic pathways simultaneously: GLP-1 for appetite suppression and gastric emptying, GIP for enhanced insulin sensitivity and fat metabolism, and Glucagon for direct energy expenditure and hepatic fat mobilization. The triple mechanism has shown the strongest weight-loss outcomes in early clinical trials, though the research is still earlier-stage compared to single and dual agonists.",
+    researchDosing: "Trial-based weekly titration — investigational compound.",
+    protocolSummary: "Retatrutide remains investigational with ongoing Phase 3 trials. All dosing context should be discussed only within published study parameters.",
+    frequency: "Weekly titration-based schedule",
+    timingSuggestion: "Use as one incretin anchor only. The triple GLP-1 + GIP + Glucagon mechanism covers three receptor pathways — never combine with any other incretin-class compound.",
+    cycleLength: "Multi-week titration (investigational)",
+    loadingPhase: "Start low and titrate only within published study context.",
+    maintenancePhase: "Investigational context only — long-term maintenance data is still being collected.",
+    productNote: "Triple agonist (GLP-1 + GIP + Glucagon) — the most potent incretin-class compound in current clinical research, targeting three metabolic pathways simultaneously. Available from research peptide suppliers. Earlier-stage research compared to single and dual agonists.",
+    warnings: ["Do not stack with other GLP-1, GIP, or incretin agonists in the same protocol — only one incretin-class compound at a time.", "Investigational status means long-term safety data is limited.", "The triple-agonist mechanism produces the strongest metabolic effects and may carry proportionally stronger side-effect potential.", "GI effects, pancreatitis/gallbladder history, pregnancy, and diabetic-medication interactions require extra caution."],
+    citations: [
+      { label: "Jastreboff AM, et al. N Engl J Med. 2023;389:514-526", doi: "10.1056/NEJMoa2301972" },
+      { label: "Rosenstock J, et al. Lancet. 2023;402(10401):529-544", doi: "10.1016/S0140-6736(23)01053-X" },
+    ],
   },
 };
