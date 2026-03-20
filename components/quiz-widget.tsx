@@ -116,7 +116,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Peptide Stack Tool</p>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <h1 className="text-3xl font-semibold tracking-tight text-[#0B1426] sm:text-4xl">A smarter peptide protocol builder that feels like a consult, not a generic quiz</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-[#0B1426] sm:text-4xl">A smarter peptide research stack builder — educational, not a generic quiz</h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
                 Warm, research-grounded, and personalized. Answer the full intake once and get the complete report instantly — with stack logic, timing notes, citations, and a print-ready PDF.
               </p>
@@ -136,14 +136,14 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
       <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
           <div className="inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Full access included</div>
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-[#0B1426] sm:text-4xl">Get a personalized peptide stack that actually matches your goal, routine, and preferences</h2>
+          <h2 className="mt-5 text-3xl font-semibold tracking-tight text-[#0B1426] sm:text-4xl">Get a research-backed peptide stack report matched to your goal, routine, and preferences</h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
             Whether you care about healing, hair, body composition, focus, sleep, or longevity, this tool builds a more thoughtful result around the research pathways most relevant to you.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {[
               "13-question intake with full report unlocked",
-              "Blend dedup logic for KLOW, GLOW, Wolverine, and REGENO",
+              "Blend dedup logic for KLOW and GLOW",
               "Single-GLP-1 enforcement for weight-loss stacks",
             ].map((item) => (
               <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-700">
@@ -165,7 +165,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
               "Goal-matched peptides or blends with plain-English explanations",
               "Research-protocol dosing language with citations for every peptide shown",
               "Morning vs evening timing suggestions and interaction notes",
-              "30 / 60 / 90 day protocol calendar built from your intake",
+              "30 / 60 / 90 day research protocol calendar built from the intake",
               "A print-ready PDF-style report you can save immediately",
             ].map((item) => (
               <div key={item} className="rounded-2xl border border-white/15 bg-white/5 px-4 py-4 text-sm leading-6 text-slate-100">
@@ -272,7 +272,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Full personalized protocol report</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Full research-based stack report</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight text-[#0B1426] sm:text-3xl">{result.headline}</h2>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">{result.summary}</p>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700 sm:text-base">{result.reportIntro}</p>
@@ -289,7 +289,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-              <h3 className="text-xl font-semibold text-[#0B1426]">Your recommended stack</h3>
+              <h3 className="text-xl font-semibold text-[#0B1426]">Recommended research stack</h3>
               <div className="mt-6 grid gap-4">
                 {result.peptides.map((item) => {
                   const profile = peptideProfiles[item.id];
@@ -332,7 +332,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
               </div>
             </div>
 
-            {[{ title: "Your stack vs generic", items: result.stackVsGeneric }, { title: "Research notes + compliance", items: result.researchNotes }, { title: "Interaction notes across the stack", items: result.interactionWarnings }].map((section) => (
+            {[{ title: "This stack vs generic results", items: result.stackVsGeneric }, { title: "Research notes + compliance", items: result.researchNotes }, { title: "Interaction notes across the stack", items: result.interactionWarnings }].map((section) => (
               <div key={section.title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
                 <h3 className="text-xl font-semibold text-[#0B1426]">{section.title}</h3>
                 <div className="mt-5 grid gap-3">
@@ -370,7 +370,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
             </div>
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-              <h3 className="text-xl font-semibold text-[#0B1426]">Your daily protocol schedule</h3>
+              <h3 className="text-xl font-semibold text-[#0B1426]">Daily research protocol schedule</h3>
               <div className="mt-5 grid gap-3">
                 {result.dailyProtocolSchedule.map((item) => (
                   <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-700">
@@ -393,7 +393,7 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
             </div>
 
             <div className="rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,#f8fafc_0%,#eef6f6_100%)] p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:p-8">
-              <h3 className="text-xl font-semibold text-[#0B1426]">Your intake summary</h3>
+              <h3 className="text-xl font-semibold text-[#0B1426]">Intake summary</h3>
               <div className="mt-5 space-y-3 text-sm leading-6 text-slate-700">
                 <p><span className="font-semibold text-[#0B1426]">Goal:</span> {answers.goal || "—"}</p>
                 <p><span className="font-semibold text-[#0B1426]">Experience:</span> {answers.experience || "—"}</p>
@@ -428,8 +428,8 @@ export function QuizWidget({ embed = false }: QuizWidgetProps) {
 
         <div className="print-hidden flex flex-col gap-3 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div>
-            <p className="text-sm font-semibold text-[#0B1426]">Your report is ready to print or save as a PDF.</p>
-            <p className="mt-1 text-sm text-slate-600">Use the print button to save this as a PDF. The print view is styled to function as your downloadable report.</p>
+            <p className="text-sm font-semibold text-[#0B1426]">The report is ready to print or save as a PDF.</p>
+            <p className="mt-1 text-sm text-slate-600">Use the print button to save this as a PDF. The print view is styled as a downloadable research report.</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <button type="button" onClick={handlePrint} className="rounded-full bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-700">

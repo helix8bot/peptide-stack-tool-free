@@ -95,7 +95,6 @@ export type Citation = {
 export type PeptideId =
   | "bpc-157"
   | "tb-500"
-  | "ss-31"
   | "ghk-cu"
   | "tesamorelin"
   | "ipamorelin"
@@ -106,15 +105,9 @@ export type PeptideId =
   | "nad-plus"
   | "selank"
   | "semax"
-  | "dsip"
   | "klow"
   | "glow"
-  | "wolverine"
-  | "regeno"
-  | "semaglutide"
-  | "tirzepatide"
-  | "retatrutide"
-  | "cagrilintide-glp1";
+  | "semaglutide";
 
 export type DailyScheduleItem = {
   period: "Morning" | "Evening" | "Flexible";
@@ -148,7 +141,7 @@ export const freeQuestions = [
   {
     id: "goal",
     title: "What are you hoping to improve first?",
-    subtitle: "Your main goal helps us anchor the stack around the research category most likely to fit your situation.",
+    subtitle: "The main goal helps anchor the stack around the research category most relevant to the situation described.",
     options: [
       "Pain & Injury Recovery",
       "Hair Restoration & Skin Health",
@@ -161,7 +154,7 @@ export const freeQuestions = [
   {
     id: "experience",
     title: "How familiar are you with peptides right now?",
-    subtitle: "Your experience level helps us keep the result appropriately simple, balanced, or more advanced.",
+    subtitle: "Experience level helps keep the result appropriately simple, balanced, or more advanced.",
     options: [
       "Brand new — I want a simple starting point",
       "I’ve been researching and want a smarter plan",
@@ -172,7 +165,7 @@ export const freeQuestions = [
   {
     id: "priority",
     title: "What matters most in your recommendation?",
-    subtitle: "We ask this so the output can lean toward confidence, convenience, simplicity, or a more complete stack.",
+    subtitle: "This helps the output lean toward confidence, convenience, simplicity, or a more complete stack.",
     options: [
       "Highest-confidence research first",
       "I want the simplest path to evaluate",
@@ -187,7 +180,7 @@ export const fullQuestions = [
     id: "conditions",
     type: "multi" as const,
     title: "Which of these are part of the picture for you right now?",
-    subtitle: "These signals help us prioritize the mechanisms that deserve the most attention in your protocol.",
+    subtitle: "These signals help prioritize the mechanisms that deserve the most attention in the research stack.",
     options: [
       "Chronic joint or tendon discomfort",
       "Hair thinning or shedding",
@@ -212,7 +205,7 @@ export const fullQuestions = [
     id: "budget",
     type: "single" as const,
     title: "What monthly budget feels realistic for this research plan?",
-    subtitle: "We use budget to avoid giving you a one-size-fits-all stack that looks great on paper but feels unrealistic in real life.",
+    subtitle: "Budget context avoids a one-size-fits-all stack that looks great on paper but feels unrealistic in practice.",
     options: ["Under $100", "$100-200", "$200-350", "$350-500", "$500+"] satisfies BudgetOption[],
   },
   {
@@ -283,7 +276,7 @@ export const fullQuestions = [
     id: "timeline",
     type: "single" as const,
     title: "What kind of timeline are you planning around?",
-    subtitle: "We ask this so the report can separate a clean 30-day starting plan from a longer 60/90-day buildout.",
+    subtitle: "This helps the report separate a clean 30-day starting plan from a longer 60/90-day buildout.",
     options: [
       "I want a 30-day starting plan",
       "I’m thinking in 60-90 day phases",
@@ -367,28 +360,6 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
       { label: "Goldstein AL, et al. Expert Opin Biol Ther. 2012;12(1):37-51", doi: "10.1517/14712598.2012.634793" },
       { label: "Philp D, et al. J Cell Physiol. 2007;208(1):195-200", doi: "10.1002/jcp.20687" },
       { label: "Bock-Marquette I, et al. Nature. 2004;432(7016):466-472", doi: "10.1038/nature03000" },
-    ],
-  },
-  "ss-31": {
-    id: "ss-31",
-    name: "SS-31 (Elamipretide)",
-    category: "peptide",
-    whatItDoes: "SS-31 is a mitochondria-targeted peptide studied for cardiolipin binding, oxidative stress reduction, and mitochondrial membrane resilience.",
-    researchDosing:
-      "4-20 mg daily in investigational protocols.",
-    protocolSummary:
-      "The most commonly studied research protocol for SS-31 is investigational and indication-specific, often described in daily dosing ranges between 4-20 mg for 4-8 weeks. Source: Szeto HH. Pharm Res. 2014;31(8):1961-1969.",
-    frequency: "Once daily",
-    cycleLength: "4-8 weeks",
-    loadingPhase: "Not standardized.",
-    maintenancePhase: "Remain within the investigational cycle design only.",
-    dailySchedule: [{ period: "Morning", detail: "Earlier-day mitochondrial support dosing is the most common educational framing." }],
-    timingSuggestion: "Energy-support research discussions often place mitochondrial compounds earlier in the day, though published protocols vary by study design.",
-    warnings: ["Investigational context only.", "Pregnancy, malignancy, and interaction data remain limited."],
-    citations: [
-      { label: "Szeto HH. Pharm Res. 2014;31(8):1961-1969", doi: "10.1007/s11095-013-1226-7" },
-      { label: "Daubert MA, et al. Circ Heart Fail. 2017;10(12):e004389", doi: "10.1161/CIRCHEARTFAILURE.117.004389" },
-      { label: "Karaa A, et al. Genet Med. 2018;20(12):1594-1602", doi: "10.1038/gim.2018.35" },
     ],
   },
   "ghk-cu": {
@@ -618,24 +589,6 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
       { label: "Grivennikov IA, Dolotov OV. Russ J Bioorg Chem. 2007;33(6):589-598" },
     ],
   },
-  dsip: {
-    id: "dsip",
-    name: "DSIP",
-    category: "peptide",
-    whatItDoes: "DSIP is a sleep-adjacent peptide often mentioned in recovery circles, though the evidence base is thinner than many other compounds in this tool.",
-    researchDosing:
-      "100-300 mcg near bedtime in anecdotal research discussions.",
-    protocolSummary:
-      "The most commonly studied research protocol for DSIP is not well standardized; educational sleep protocols often describe 100-300 mcg near bedtime for short 2-4 week trials. Source: limited literature support noted in the master reference.",
-    frequency: "Once nightly",
-    cycleLength: "2-4 weeks",
-    loadingPhase: "No standardized loading phase.",
-    maintenancePhase: "Keep DSIP short-cycle and contextual only.",
-    dailySchedule: [{ period: "Evening", detail: "Short-cycle bedtime use only." }],
-    timingSuggestion: "When it appears in sleep-oriented research discussions, it is usually framed close to evening or bedtime windows.",
-    warnings: ["Keep DSIP contextual because the literature support is relatively thin."],
-    citations: [{ label: "Limited literature support in the master reference; contextual only" }],
-  },
   klow: {
     id: "klow",
     name: "KLOW Blend",
@@ -679,44 +632,6 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     warnings: ["Keep blend language cosmetic, educational, and research-oriented."],
     citations: [{ label: "Component rationale drawn from GHK-Cu, BPC-157, and TB-500 literature in the master reference" }],
   },
-  wolverine: {
-    id: "wolverine",
-    name: "Wolverine Blend",
-    category: "blend",
-    whatItDoes: "Wolverine is a recovery blend that combines BPC-157 and TB-500 for convenience-first tissue support.",
-    researchDosing: "Component-equivalent dosing based on BPC-157 and TB-500 literature.",
-    protocolSummary: "Wolverine is treated as a convenience-first replacement for separate BPC-157 and TB-500 discussion.",
-    frequency: "Daily blend use with TB-500-equivalent weekly exposure",
-    timingSuggestion: "Best framed as one recovery anchor instead of separate BPC-157 and TB-500 vials.",
-    cycleLength: "4-8 weeks",
-    loadingPhase: "Daily use during the active recovery window.",
-    maintenancePhase: "Reduce frequency once the primary recovery block is complete.",
-    blendIngredients: ["bpc-157", "tb-500"],
-    shouldNotCombineWith: ["Do not duplicate standalone BPC-157 or TB-500 when Wolverine is already in the stack."],
-    dailySchedule: [{ period: "Morning", detail: "Single recovery-focused injection replacing separate BPC-157 and TB-500." }],
-    productNote: "Wolverine contains BPC-157 + TB-500.",
-    warnings: ["Treat Wolverine as a convenience-first substitute for separate recovery components."],
-    citations: [{ label: "Component rationale drawn from BPC-157 and TB-500 literature in the master reference" }],
-  },
-  regeno: {
-    id: "regeno",
-    name: "REGENO Blend",
-    category: "blend",
-    whatItDoes: "REGENO is a broader recovery blend built around BPC-157, TB-500, and GHK-Cu.",
-    researchDosing: "Component-equivalent dosing based on BPC-157, TB-500, and GHK-Cu literature.",
-    protocolSummary: "REGENO is treated as a convenience-first replacement for separate BPC-157, TB-500, and GHK-Cu discussion.",
-    frequency: "Daily blend use with TB-500-equivalent weekly exposure",
-    timingSuggestion: "Useful when a user wants one broader recovery blend instead of multiple standalone vials.",
-    cycleLength: "4-8 weeks",
-    loadingPhase: "Daily use during the active recovery window.",
-    maintenancePhase: "Reduce frequency once the primary recovery block is complete.",
-    blendIngredients: ["bpc-157", "tb-500", "ghk-cu"],
-    shouldNotCombineWith: ["Do not duplicate standalone BPC-157, TB-500, or GHK-Cu when REGENO is already in the stack."],
-    dailySchedule: [{ period: "Morning", detail: "Single broad recovery injection replacing separate BPC-157, TB-500, and GHK-Cu." }],
-    productNote: "REGENO contains BPC-157 + TB-500 + GHK-Cu.",
-    warnings: ["Treat REGENO as a convenience-first substitute for separate recovery components."],
-    citations: [{ label: "Component rationale drawn from BPC-157, TB-500, and GHK-Cu literature in the master reference" }],
-  },
   semaglutide: {
     id: "semaglutide",
     name: "Semaglutide",
@@ -732,49 +647,4 @@ export const peptideProfiles: Record<PeptideId, PeptideProfile> = {
     warnings: ["Do not stack with other GLP-1 or incretin agonists in the same protocol.", "GI effects, pancreatitis/gallbladder history, thyroid tumor warnings, pregnancy, and diabetic-medication interactions require caution."],
     citations: [{ label: "Wilding JPH, et al. N Engl J Med. 2021;384:989-1002", doi: "10.1056/NEJMoa2032183" }],
   },
-  tirzepatide: {
-    id: "tirzepatide",
-    name: "Tirzepatide",
-    category: "peptide",
-    whatItDoes: "Tirzepatide is a dual GIP/GLP-1 agonist studied for strong metabolic and body-composition effects.",
-    researchDosing: "Trial- and label-based weekly titration.",
-    protocolSummary: "Tirzepatide protocols are titration-based and should remain tied to published trial and label context.",
-    frequency: "Weekly titration-based schedule",
-    timingSuggestion: "Use as one incretin anchor only; do not pair with another GLP-1 product.",
-    cycleLength: "Multi-week titration",
-    loadingPhase: "Start low and titrate per published study or label context.",
-    maintenancePhase: "Hold at the lowest effective protocol tier under qualified supervision.",
-    warnings: ["Do not stack with other GLP-1 or incretin agonists in the same protocol.", "GI effects, pancreatitis/gallbladder history, pregnancy, and diabetic-medication interactions require caution."],
-    citations: [{ label: "Jastreboff AM, et al. N Engl J Med. 2022;387:205-216", doi: "10.1056/NEJMoa2206038" }],
-  },
-  retatrutide: {
-    id: "retatrutide",
-    name: "Retatrutide",
-    category: "peptide",
-    whatItDoes: "Retatrutide is a triple agonist studied for high-potency metabolic and weight-management effects.",
-    researchDosing: "Trial-based weekly titration.",
-    protocolSummary: "Retatrutide remains investigational and should be discussed only in study context.",
-    frequency: "Weekly titration-based schedule",
-    timingSuggestion: "Use as one incretin anchor only; do not pair with another GLP-1 product.",
-    cycleLength: "Multi-week titration",
-    loadingPhase: "Start low and titrate only within published study context.",
-    maintenancePhase: "Investigational context only.",
-    warnings: ["Do not stack with other GLP-1 or incretin agonists in the same protocol.", "Investigational status and metabolic side-effect context require extra caution."],
-    citations: [{ label: "Jastreboff AM, et al. N Engl J Med. 2023;389:514-526", doi: "10.1056/NEJMoa2301972" }],
-  },
-  "cagrilintide-glp1": {
-    id: "cagrilintide-glp1",
-    name: "Cagrilintide/GLP-1 Blend",
-    category: "blend",
-    whatItDoes: "Cagrilintide/GLP-1 is a combination incretin-style weight-management protocol.",
-    researchDosing: "Trial-based titration.",
-    protocolSummary: "This combination should be treated as a single GLP-1-family anchor rather than layered with another GLP-1 product.",
-    frequency: "Weekly titration-based schedule",
-    timingSuggestion: "Use as one incretin anchor only; do not pair with Semaglutide, Tirzepatide, or Retatrutide.",
-    cycleLength: "Multi-week titration",
-    loadingPhase: "Start low and titrate only within published study context.",
-    maintenancePhase: "Study-context only.",
-    warnings: ["Do not stack with other GLP-1 or incretin agonists in the same protocol."],
-    citations: [{ label: "GLP-1 family combination discussed in master reference; keep to study context" }],
-  }
 };
